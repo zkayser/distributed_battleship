@@ -4,7 +4,6 @@ defmodule WaitingForPlayersTest do
   test "get some players" do
     context = WaitingForPlayers.run(GameCommander.new())
 
-    assert context.state == :start_game
     assert Enum.count(context.players) == 1
   end
 end
