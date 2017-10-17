@@ -4,19 +4,18 @@ defmodule GameCommanderTest do
   describe "wait for players" do
     
     test "a player connects" do
-      phases = [&GameCommander.wait_for_players/1]
+      phases = [&WaitingForPlayers.run/1]
 
       context = GameCommander.start(phases)
 
       assert context.state == :start_game
-      assert Enum.count(context.players) == 1
     end
   end
 
   describe "start game" do
 
     test "notify players of game start" do
-      phases = [&GameCommander.start_game/1]
+      phases = [&StartGame.run/1]
       
       context = GameCommander.start(phases, %{state: :start_game})
 

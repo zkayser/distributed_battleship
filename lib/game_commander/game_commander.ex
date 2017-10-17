@@ -27,13 +27,5 @@ defmodule GameCommander do
     |> run_each_phase(the_rest)
   end
 
-  def wait_for_players(context) do
-    Map.merge(context, %{state: :start_game, players: [1]})
-  end
-
-  def start_game(context) do
-    Map.merge(context, %{state: :adding_ships})
-  end
-
 end
 
