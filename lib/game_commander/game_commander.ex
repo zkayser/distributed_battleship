@@ -20,6 +20,17 @@ defmodule GameCommander do
     %{state: :wait_for_players}
   end
 
+  def phases() do
+    [
+      &WaitingForPlayers.run/1,
+      &StartGame.run/1
+    ]
+  end
+
+  def start() do
+    start(phases())
+  end
+
   def start(phases) do
     start(phases, new())
   end
@@ -29,10 +40,10 @@ defmodule GameCommander do
   end
 
   defp run_each_phase(context, []), do: context
-  defp run_each_phase(context, [phase|the_rest]) do
+  defp run_each_phase(context, [phase|other_phases]) do
     context = context 
               |> Map.merge(phase.(context))
-              |> run_each_phase(the_rest)
+              |> run_each_phase(other_phases)
 
     Map.update(context, :state, :wait_for_players, fn old_state -> @fsm[old_state] end)
   end
