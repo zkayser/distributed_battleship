@@ -8,14 +8,6 @@ defmodule GameCommander do
     :feedback => :scoreboard
   }
 
-  # States
-  # :wait_for_players
-  # :start_game
-  # :adding_ships
-  # :taking_turns
-  # :feedback
-  # :scoreboard
-  #
   def new() do
     %{state: :wait_for_players}
   end
