@@ -13,7 +13,11 @@ defmodule GameCommander do
   end
 
   def start(phases) do
-    run_each_phase(new(), phases)
+    start(phases, new())
+  end
+
+  def start(phases, context) do
+    run_each_phase(context, phases)
   end
 
   defp run_each_phase(context, []), do: context

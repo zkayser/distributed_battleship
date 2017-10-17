@@ -16,12 +16,9 @@ defmodule GameCommanderTest do
   describe "start game" do
 
     test "notify players of game start" do
-      phases = [
-        &GameCommander.wait_for_players/1,
-        &GameCommander.start_game/1
-      ]
+      phases = [&GameCommander.start_game/1]
       
-      context = GameCommander.start(phases)
+      context = GameCommander.start(phases, %{state: :start_game})
 
       assert context.state == :adding_ships
     end
