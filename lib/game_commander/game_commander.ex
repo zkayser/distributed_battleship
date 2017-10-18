@@ -7,12 +7,12 @@ defmodule GameCommander do
   def fsm() do
     %{
       #Old State,         Event      Action,                   New State
-      {:none,             :next} => {&WaitingForPlayers.run/1, :wait_for_players},
-      {:wait_for_players, :next} => {&StartGame.run/1,         :start_game},
-      {:start_game,       :next} => {&GameCommander.noop/1,    :adding_ships},
-      {:adding_ships,     :next} => {&GameCommander.noop/1,    :taking_turns},
-      {:taking_turns,     :next} => {&GameCommander.noop/1,    :feedback},
-      {:feedback,         :next} => {&GameCommander.noop/1,    :scoreboard}
+      {:none,             :next} => {&WaitingForPlayers.tick/1, :wait_for_players},
+      {:wait_for_players, :next} => {&StartGame.tick/1,         :start_game},
+      {:start_game,       :next} => {&GameCommander.noop/1,     :adding_ships},
+      {:adding_ships,     :next} => {&GameCommander.noop/1,     :taking_turns},
+      {:taking_turns,     :next} => {&GameCommander.noop/1,     :feedback},
+      {:feedback,         :next} => {&GameCommander.noop/1,     :scoreboard}
     }
   end
 
@@ -32,8 +32,8 @@ defmodule GameCommander do
 
   def phases() do
     [
-      &WaitingForPlayers.run/1,
-      &StartGame.run/1
+      &WaitingForPlayers.tick/1,
+      &StartGame.tick/1
     ]
   end
 
@@ -46,14 +46,14 @@ defmodule GameCommander do
   end
 
   def start(phases, context) do
-    run_each_phase(context, phases)
+    tick(context, phases)
   end
 
-  defp run_each_phase(context, []), do: context
-  defp run_each_phase(context, [phase|other_phases]) do
+  defp tick(context, []), do: context
+  defp tick(context, [phase|other_phases]) do
     context = context 
               |> Map.merge(phase.(context))
-              |> run_each_phase(other_phases)
+              |> tick(other_phases)
 
     Map.update(context, :state, :wait_for_players, fn old_state -> @fsm[old_state] end)
   end

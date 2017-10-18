@@ -1,5 +1,5 @@
 defmodule StartGame do
-  def run(context) do
+  def tick(context) do
     Map.merge(context, %{})
   end
 end

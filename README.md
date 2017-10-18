@@ -22,5 +22,10 @@ Game phases:
 * Player turns
 * Player feedback
 
+## Program Flow
+
+The game is driven by a sequence of ticks and a predictable period. Every X ticks events can occur.
+A game is split into phases represented by states. Ticks initiate a step based on the phase.
+
 
 

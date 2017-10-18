@@ -2,7 +2,7 @@ defmodule StartGameTest do
   use ExUnit.Case
 
   test "start game" do
-    StartGame.run(GameCommander.new())
+    StartGame.tick(GameCommander.new())
 
     assert 1 == 1
   end
