@@ -22,15 +22,15 @@ defmodule Players do
   def wait_for_players(:stop, _) do end
   def wait_for_players(:continue, players) do
     receive do
-      {:stop, _ }   -> 
-        wait_for_players(:stop, players)
+      {:stop, _ } -> :stop
       {:player_count, from_pid } -> 
         send from_pid, 0
-        wait_for_players(:continue, players)
+        :continue
       message -> 
         IO.puts(">>>> wait_for_players #{inspect message}")
-        wait_for_players(:continue, players)
+        :continue
     end
+    |> wait_for_players(players)
   end
 
 end
