@@ -4,17 +4,22 @@ defmodule DistributedBattleship.Application do
   @moduledoc false
 
   use Application
+  require Logger
 
   def start(_type, _args) do
+    Logger.info "Starting Distributed Battleships"
+
+    GameCommander.start()
+
     # List all child processes to be supervised
-    children = [
+    #children = [
       # Starts a worker by calling: DistributedBattleship.Worker.start_link(arg)
       # {DistributedBattleship.Worker, arg},
-    ]
+    #]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: DistributedBattleship.Supervisor]
-    Supervisor.start_link(children, opts)
+    #opts = [strategy: :one_for_one, name: DistributedBattleship.Supervisor]
+    #Supervisor.start_link(children, opts)
   end
 end

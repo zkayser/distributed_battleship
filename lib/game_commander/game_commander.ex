@@ -25,6 +25,11 @@ defmodule GameCommander do
     @actions
   end
 
+  # MAIN Application Start
+  def start() do
+    play(:none, %{tick_count: 0, tick_rate: 1000}, @actions)
+  end
+
   def start(state, context) do
     play(state, context, @actions)
   end
@@ -46,6 +51,13 @@ defmodule GameCommander do
 
     Logger.debug("#{__MODULE__}: STATE #{state} => #{new_state} : #{inspect context}")
 
+    pause(context[:tick_rate])
+
     play(new_state, context, actions)
+  end
+
+  defp pause(nil), do: false
+  defp pause(tick_rate) do
+    :timer.sleep(tick_rate)
   end
 end
