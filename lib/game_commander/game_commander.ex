@@ -4,7 +4,7 @@ defmodule GameCommander do
 
   @actions [
     none:             &GameCommander.noop/1,
-    wait_for_players: &WaitingForPlayers.run/1,
+    wait_for_players: &WaitingForPlayers.tick/1,
     start_game:       &GameCommander.noop/1,
     adding_ships:     &GameCommander.noop/1,
     taking_turns:     &GameCommander.noop/1,
