@@ -24,7 +24,7 @@ defmodule Players do
     receive do
       {:stop, _ } -> :stop
       {:player_count, from_pid } -> 
-        send from_pid, 0
+        send from_pid, length(Node.list)
         :continue
       message -> 
         IO.puts(">>>> wait_for_players #{inspect message}")
