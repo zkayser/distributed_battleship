@@ -3,5 +3,5 @@
 # Battleshps 
 # ###################################################
 
-mix run --no-halt
+elixir --sname commander -S mix run --no-halt
 

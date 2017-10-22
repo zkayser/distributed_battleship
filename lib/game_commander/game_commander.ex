@@ -27,7 +27,13 @@ defmodule GameCommander do
 
   # MAIN Application Start
   def start() do
-    play(:none, %{tick_count: 0, tick_rate_ms: 1000}, @actions)
+    context = %{
+      tick_count: 0,
+      tick_rate_ms: 1000,
+      node_self: Node.self(),
+      node_cookie: Node.get_cookie(),
+    }
+    play(:none, context, @actions)
   end
 
   def start(state, context) do
