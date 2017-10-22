@@ -35,5 +35,16 @@ defmodule GameCommanderTest do
       assert context.tick_count == 8
     end
   end
+
+  test "should ensure that a phase name is spelled correctly" do
+    refute GameCommander.valid_phase?(nil)
+    refute GameCommander.valid_phase?("")
+    refute GameCommander.valid_phase?(:invalid)
+
+    Enum.each GameCommander.states(), fn state ->
+      assert GameCommander.valid_phase?(state)
+    end
+  end
+  
 end
 

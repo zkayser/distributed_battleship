@@ -3,18 +3,22 @@ defmodule GameCommander do
   require Logger
 
   @actions [
-    none:             &StartApp.tick/1,
-    wait_for_players: &WaitingForPlayers.tick/1,
-    start_game:       &GameCommander.noop/1,
-    adding_ships:     &GameCommander.noop/1,
-    taking_turns:     &GameCommander.noop/1,
-    feedback:         &GameCommander.noop/1,
-    scoreboard:       &GameCommander.noop/1,
-    finish:           &GameCommander.noop/1
+    none:                &StartApp.tick/1,
+    waiting_for_players: &WaitingForPlayers.tick/1,
+    start_game:          &GameCommander.noop/1,
+    adding_ships:        &GameCommander.noop/1,
+    taking_turns:        &GameCommander.noop/1,
+    feedback:            &GameCommander.noop/1,
+    scoreboard:          &GameCommander.noop/1,
+    finish:              &GameCommander.noop/1
   ]
 
   def noop(context) do
     Map.merge(context, %{new_state: context.state})
+  end
+
+  def valid_phase?(phase) do
+    phase in states()
   end
 
   def states() do
