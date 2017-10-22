@@ -2,7 +2,7 @@ defmodule GameCommander do
 
   require Logger
 
-  @actions [
+  @phases [
     none:                &StartApp.tick/1,
     waiting_for_players: &WaitingForPlayers.tick/1,
     start_game:          &GameCommander.noop/1,
@@ -14,19 +14,19 @@ defmodule GameCommander do
   ]
 
   def noop(context) do
-    Map.merge(context, %{new_state: context.state})
+    Map.merge(context, %{new_phase: context.phase})
   end
 
   def valid_phase?(phase) do
-    phase in states()
+    phase in phase_names()
   end
 
-  def states() do
-    Keyword.keys(@actions)
+  def phase_names() do
+    Keyword.keys(@phases)
   end
 
-  def actions() do
-    @actions
+  def phases() do
+    @phases
   end
 
   # MAIN Application Start
@@ -37,33 +37,45 @@ defmodule GameCommander do
       node_self: Node.self(),
       node_cookie: Node.get_cookie(),
     }
-    play(:none, context, @actions)
+    play(:none, context, @phases)
   end
 
-  def start(state, context) do
-    play(state, context, @actions)
+  def start(phase, context) do
+    play(phase, context, @phases)
   end
 
-  def start(state, context, actions) do
-    play(state, context, actions)
+  def start(phase, context, phases) do
+    play(phase, context, phases)
   end
 
   defp play(:finish, context, _), do: context
-  defp play(state, context, actions) do
-    context = Map.merge(context, %{state: state})
+  defp play(phase, context, phases) do
+    context = Map.merge(context, %{phase: phase})
 
-    action = Keyword.get(actions, state)
-    context = action.(context)
+    phase_action = Keyword.get(phases, phase)
+    phase_action_module = :erlang.fun_info(phase_action)[:module]
 
-    new_state = context.new_state
-    context = Map.delete(context, :new_state)
-    context = Map.update(context, :tick_count, 1, &(&1 + 1))
+    phase_context = case context do
+      %{^phase_action_module => phase_context} -> phase_context
+      _                                        -> %{}
+    end
 
-    Logger.debug("#{__MODULE__}: STATE #{state} => #{new_state} : #{inspect context}")
+    phase_context = phase_action.(phase_context)
+
+    new_phase = phase_context.new_phase
+    phase_context = Map.delete(phase_context, :new_phase)
+
+    context = 
+      context
+      |> update_in([phase_action_module], fn _ -> phase_context end)
+      |> Map.merge(%{phase: new_phase})
+      |> Map.update(:tick_count, 1, &(&1 + 1))
+
+    Logger.debug("#{__MODULE__}: PHASE #{phase} => #{new_phase} : #{inspect context}")
 
     pause(context[:tick_rate_ms])
 
-    play(new_state, context, actions)
+    play(new_phase, context, phases)
   end
 
   defp pause(nil), do: false
@@ -71,3 +83,5 @@ defmodule GameCommander do
     :timer.sleep(tick_rate_ms)
   end
 end
+
+
