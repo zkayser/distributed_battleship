@@ -3,7 +3,7 @@ defmodule GameCommander do
   require Logger
 
   @actions [
-    none:             &GameCommander.noop/1,
+    none:             &StartApp.tick/1,
     wait_for_players: &WaitingForPlayers.tick/1,
     start_game:       &GameCommander.noop/1,
     adding_ships:     &GameCommander.noop/1,
