@@ -73,7 +73,7 @@ defmodule GameCommander do
     play(new_phase, context, phases)
   end
 
-  defp pause(nil), do: false
+  defp pause(nil), do: :ok
   defp pause(tick_rate_ms) do
     :timer.sleep(tick_rate_ms)
   end
