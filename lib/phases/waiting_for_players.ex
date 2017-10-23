@@ -5,47 +5,33 @@ defmodule WaitingForPlayers do
 
   require Logger
 
-  def tick(context = %{waiting_for_players: %{players_pid: pid, wait_start: wait_start, wait_max: wait_max}}) do
+  def tick(phase_context = %{players_pid: pid, wait_start: wait_start, wait_max: wait_max}) do
     Logger.debug("#{__MODULE__}: update")
 
-    context = Map.merge(context, 
-      %{waiting_for_players:
-        Map.merge(context.waiting_for_players,
-          %{
-            player_count: Players.player_count(pid)
-          }),
-        new_state: :waiting_for_players
-      }
-    )
+    phase_context = Map.merge(phase_context, %{
+      new_phase: :waiting_for_players,
+      player_count: Players.player_count(pid)
+    })
 
-    context = cond do
-      DateTime.diff(DateTime.utc_now, wait_start) >= wait_max -> 
-        Map.merge(context, %{new_state: :start_game})
-      true -> context
+    phase_context = cond do
+      DateTime.diff(DateTime.utc_now, wait_start) >= wait_max -> Map.merge(phase_context, %{new_phase: :start_game})
+      true -> phase_context
     end
 
-    context
+    phase_context
   end
 
-  def tick(context) do
+  def tick(phase_context) do
     Logger.debug("#{__MODULE__}: initialize")
 
-    new_context = 
-      %{
-        new_state: :waiting_for_players,
-        waiting_for_players: 
-          %{
-            players_pid: Players.start(),
-            player_count: 0,
-            wait_max: 60,
-            wait_start: DateTime.utc_now
-          },
-      }
+    new_phase_context = %{
+      new_phase: :waiting_for_players,
+      players_pid: Players.start(),
+      player_count: 0,
+      wait_max: 60,
+      wait_start: DateTime.utc_now
+    }
 
-    case Map.has_key?(context, :waiting_for_players) do
-      true  -> update_in(new_context, [:waiting_for_players], 
-                  fn waiting_for_players -> Map.merge(waiting_for_players, context.waiting_for_players) end)
-      false -> new_context
-    end
+    Map.merge(new_phase_context, phase_context)
   end
 end

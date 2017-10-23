@@ -2,10 +2,10 @@ defmodule StartAppTest do
   use ExUnit.Case
 
   test "transition to waiting_for_player phase" do
-    context = StartApp.tick(%{})
+    phase_context = StartApp.tick(%{})
 
-    assert context.new_state == :waiting_for_players
-    assert GameCommander.valid_phase?(context.new_state)
+    assert phase_context.new_phase == :waiting_for_players
+    assert GameCommander.valid_phase?(phase_context.new_phase)
   end
 end
 

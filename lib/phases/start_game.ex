@@ -1,6 +1,6 @@
 defmodule StartGame do
-  def tick(context) do
-    Map.merge(context, %{})
+  def tick(phase_context) do
+    Map.merge(phase_context, %{})
   end
 end
 
