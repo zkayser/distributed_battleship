@@ -31,6 +31,10 @@ defmodule GameCommander do
 
   # MAIN Application Start
   def start() do
+    spawn_link(__MODULE__, :play, [])
+  end
+
+  def play() do
     context = %{
       tick_count: 0,
       tick_rate_ms: 1000,
@@ -40,16 +44,12 @@ defmodule GameCommander do
     play(:none, context, @phases)
   end
 
-  def start(phase, context) do
+  def play(phase, context) do
     play(phase, context, @phases)
   end
 
-  def start(phase, context, phases) do
-    play(phase, context, phases)
-  end
-
-  defp play(:finish, context, _), do: context
-  defp play(phase, context, phases) do
+  def play(:finish, context, _), do: context
+  def play(phase, context, phases) do
     context = Map.merge(context, %{phase: phase})
 
     phase_action = Keyword.get(phases, phase)

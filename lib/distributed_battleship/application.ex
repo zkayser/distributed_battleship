@@ -9,7 +9,7 @@ defmodule DistributedBattleship.Application do
   def start(_type, _args) do
     Logger.info "Starting Distributed Battleships"
 
-    spawn_link(GameCommander, :start, [])
+    GameCommander.start()
 
     # List all child processes to be supervised
     children = [

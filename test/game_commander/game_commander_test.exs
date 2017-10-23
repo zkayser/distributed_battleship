@@ -7,7 +7,7 @@ defmodule GameCommanderTest do
 
   describe "tick" do
     test "trigger an action on a tick" do
-      context = GameCommander.start(:none,
+      context = GameCommander.play(:none,
         %{
             GameCommanderTest => %{ test_phases: [:finish] }
         }, [none: &GameCommanderTest.fake_phase/1])
@@ -21,7 +21,7 @@ defmodule GameCommanderTest do
         finish: &GameCommanderTest.fake_phase/1
       ]
 
-      context = GameCommander.start(:none, 
+      context = GameCommander.play(:none, 
         %{         
           GameCommanderTest => %{test_phases: [:none, :finish]}
         }, phases)
@@ -36,7 +36,7 @@ defmodule GameCommanderTest do
         {name, &GameCommanderTest.fake_phase/1}
       end)
 
-      context = GameCommander.start(:none, 
+      context = GameCommander.play(:none, 
         %{
           GameCommanderTest => 
           %{test_phases: GameCommander.phase_names}

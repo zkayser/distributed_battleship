@@ -6,8 +6,6 @@ defmodule WaitingForPlayers do
   require Logger
 
   def tick(phase_context = %{players_pid: pid, wait_start: wait_start, wait_max: wait_max}) do
-    Logger.debug("#{__MODULE__}: update")
-
     phase_context = Map.merge(phase_context, %{
       new_phase: :waiting_for_players,
       player_count: Players.player_count(pid)
@@ -22,8 +20,6 @@ defmodule WaitingForPlayers do
   end
 
   def tick(phase_context) do
-    Logger.debug("#{__MODULE__}: initialize")
-
     new_phase_context = %{
       new_phase: :waiting_for_players,
       players_pid: Players.start(),
