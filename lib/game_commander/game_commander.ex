@@ -1,4 +1,5 @@
 defmodule GameCommander do
+  alias GameCommander
 
   require Logger
 
@@ -35,13 +36,7 @@ defmodule GameCommander do
   end
 
   def play() do
-    context = %{
-      tick_count: 0,
-      tick_rate_ms: 1000,
-      node_self: Node.self(),
-      node_cookie: Node.get_cookie(),
-    }
-    play(:none, context, @phases)
+    play(:none, Context.new(), @phases)
   end
 
   def play(phase, context) do
