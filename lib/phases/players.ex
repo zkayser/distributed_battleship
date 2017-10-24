@@ -2,7 +2,7 @@ defmodule Players do
   require Logger
 
   def start() do
-    pid = spawn_link(Players.Server, :wait_for_players, [:continue, %{}])
+    pid = spawn_link(Players.Server, :loop, [:continue, %{}])
 
     :global.register_name(:players, pid)
 
@@ -42,27 +42,38 @@ end
 defmodule Players.Server do
   require Logger
 
-  def wait_for_players(:stop, _) do end
-  def wait_for_players(:continue, players) do
+  def loop(:stop, _) do end
+  def loop(:continue, players) do
     {next, players } = receive do
-      {:stop, _ } -> 
-        {:stop, players}
-      {:player_count, from_pid } -> 
-        send from_pid, {:ok, length(Node.list)}
-        {:continue, players }
-      {:register, player_name, from_pid} ->
-        players = Map.merge(players, %{player_name => true})
-        send from_pid, {:ok, "Now there are #{players |> Map.keys |> length} players"}
-        {:continue, players }
-      {:registered_players, from_pid} ->
-        send from_pid, {:ok, Map.keys(players)}
-        {:continue, players }
-      message -> 
-        Logger.warn("Players message not supported: #{inspect message}")
-        {:continue, players }
+      command -> run(command, players)
     end
 
-    wait_for_players(next, players)
+    loop(next, players)
+  end
+
+  defp run({:stop, _ }, players) do
+    {:stop, players}
+  end
+
+  defp run({:player_count, from_pid }, players) do
+    send from_pid, {:ok, length(Node.list)}
+    {:continue, players }
+  end
+
+  defp run({:register, player_name, from_pid}, players) do
+    players = Map.merge(players, %{player_name => true})
+    send from_pid, {:ok, "Now there are #{players |> Map.keys |> length} players"}
+    {:continue, players }
+  end
+
+  defp run({:registered_players, from_pid}, players) do
+    send from_pid, {:ok, Map.keys(players)}
+    {:continue, players }
+  end
+
+  defp run(message, players) do
+    Logger.warn("Players message not supported: #{inspect message}")
+    {:continue, players }
   end
 
 end
