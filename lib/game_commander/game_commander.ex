@@ -14,8 +14,8 @@ defmodule GameCommander do
     finish:              &GameCommander.noop/1
   ]
 
-  def noop(context) do
-    Map.merge(context, %{new_phase: context.phase})
+  def noop(phase_context) do
+    phase_context
   end
 
   def valid_phase?(phase) do
@@ -43,9 +43,12 @@ defmodule GameCommander do
     play(phase, context, @phases)
   end
 
-  def play(:finish, context, _), do: context
+  def play(:finish, context, _) do
+    track_phase(context, :finish)
+  end
   def play(phase, context, phases) do
     context = Map.merge(context, %{phase: phase})
+    context = track_phase(context, phase)
 
     phase_action = Keyword.get(phases, phase)
     phase_action_module = :erlang.fun_info(phase_action)[:module]
@@ -57,9 +60,8 @@ defmodule GameCommander do
 
     phase_context = phase_action.(phase_context)
 
-    new_phase = phase_context.new_phase
-    phase_context = Map.delete(phase_context, :new_phase)
-
+    {phase_context, new_phase} = update_phase(phase_context, phase)
+    
     context = 
       context
       |> update_in([phase_action_module], fn _ -> phase_context end)
@@ -73,9 +75,23 @@ defmodule GameCommander do
     play(new_phase, context, phases)
   end
 
+  defp update_phase(phase_context = %{new_phase: new_phase}, _) do
+    {Map.delete(phase_context, :new_phase), new_phase }
+  end
+  defp update_phase(phase_context, phase) do
+    {phase_context, phase}
+  end
+
   defp pause(nil), do: :ok
   defp pause(tick_rate_ms) do
     :timer.sleep(tick_rate_ms)
+  end
+
+  defp track_phase(context = %{track_phase: track_phase}, phase) do
+    %{context | track_phase: track_phase ++ [phase]}
+  end
+  defp track_phase(context, phase) do
+    Map.merge(context, %{track_phase: [phase]})
   end
 end
 
