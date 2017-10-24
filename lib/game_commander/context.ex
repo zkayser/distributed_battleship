@@ -6,6 +6,6 @@ defmodule Context do
             node_cookie: Node.get_cookie()
 
   def new() do
-  	%__MODULE__{}
+    Map.from_struct %__MODULE__{}
   end
 end
