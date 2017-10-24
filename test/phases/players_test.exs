@@ -10,7 +10,13 @@ defmodule PlayersTest do
   end
 
   test "get player count", context do
-    assert 0 == Players.player_count(context.pid)
+    assert {:ok, 0} == Players.player_count(context.pid)
+  end
+
+  test "register player", context do
+    assert {:ok} == Players.register(context.pid, "Ed")
+
+    assert {:ok, ["Ed"]} == Players.registered_players(context.pid)
   end
 
   test "service is registered" do

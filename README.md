@@ -17,10 +17,24 @@ and can interact with the commander with the following messsages:
 Game phases:
 
 * Await players (60 second timer)
+
+Players connect and send in their details.
+
 * Start game
+
+Players are told its time to start with the ocean size, and the number of ship compoents they can use.
+
 * Player ships
+
+Players send in shop location choises,
+
 * Player turns
+
+Each player can take a turn to blow up an opponent.
+
 * Player feedback
+
+Everyone gets feedback on who won the game.
 
 ## Program Flow
 

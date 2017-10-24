@@ -1,14 +1,16 @@
 defmodule WaitingForPlayers do
   @moduledoc """
   * Once the Game Commander is started players will have 60s to start their player and connect.
+  * Players connect and send in their details.
   """
 
   require Logger
 
   def tick(phase_context = %{players_pid: pid, wait_start: wait_start, wait_max: wait_max}) do
+    {:ok, player_count} = Players.player_count(pid)
     phase_context = Map.merge(phase_context, %{
       new_phase: :waiting_for_players,
-      player_count: Players.player_count(pid)
+      player_count: player_count
     })
 
     phase_context = cond do
