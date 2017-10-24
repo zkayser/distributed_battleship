@@ -14,7 +14,7 @@ defmodule PlayersTest do
   end
 
   test "register player", context do
-    assert {:ok} == Players.register(context.pid, "Ed")
+    assert {:ok, "Now there are 1 players"} == Players.register(context.pid, "Ed")
 
     assert {:ok, ["Ed"]} == Players.registered_players(context.pid)
   end
