@@ -8,9 +8,12 @@ defmodule WaitingForPlayers do
 
   def tick(phase_context = %{players_pid: pid, wait_start: wait_start, wait_max: wait_max}) do
     {:ok, player_count} = Players.player_count(pid)
+    {:ok, registered_players} = Players.registered_players(pid)
+
     phase_context = Map.merge(phase_context, %{
       new_phase: :waiting_for_players,
-      player_count: player_count
+      player_count: player_count,
+      registered_players: registered_players
     })
 
     phase_context = cond do

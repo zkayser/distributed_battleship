@@ -44,7 +44,8 @@ defmodule Players.Server do
   def wait_for_players(:stop, _) do end
   def wait_for_players(:continue, players) do
     {next, players } = receive do
-      {:stop, _ } -> :stop
+      {:stop, _ } -> 
+        {:stop, players}
       {:player_count, from_pid } -> 
         send from_pid, {:ok, length(Node.list)}
         {:continue, players }
