@@ -40,6 +40,7 @@ defmodule Players do
 end
 
 defmodule Players.Server do
+  require Logger
 
   def wait_for_players(:stop, _) do end
   def wait_for_players(:continue, players) do
@@ -57,7 +58,7 @@ defmodule Players.Server do
         send from_pid, {:ok, Map.keys(players)}
         {:continue, players }
       message -> 
-        IO.puts(">>>> wait_for_players #{inspect message}")
+        Logger.warn("Players message not supported: #{inspect message}")
         {:continue, players }
     end
 
