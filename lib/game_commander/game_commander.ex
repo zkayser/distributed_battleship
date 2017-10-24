@@ -68,7 +68,7 @@ defmodule GameCommander do
       |> Map.merge(%{phase: new_phase})
       |> Map.update(:tick_count, 1, &(&1 + 1))
 
-    Logger.debug("#{__MODULE__}: PHASE #{phase} => #{new_phase} : #{inspect context}")
+    Logger.debug("#{__MODULE__}: PHASE #{phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
 
     pause(context[:tick_rate_ms])
 
