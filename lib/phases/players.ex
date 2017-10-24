@@ -1,7 +1,11 @@
 defmodule Players do
 
   def start() do
-    spawn_link(__MODULE__, :wait_for_players, [:continue, %{}])
+    pid = spawn_link(__MODULE__, :wait_for_players, [:continue, %{}])
+
+    :global.register_name(:players, pid)
+
+    pid
   end
 
   def stop(pid) do

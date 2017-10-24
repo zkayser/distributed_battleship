@@ -9,8 +9,12 @@ defmodule PlayersTest do
     [pid: pid]
   end
 
-  test "start", context do
+  test "get player count", context do
     assert 0 == Players.player_count(context.pid)
+  end
+
+  test "service is registered" do
+    refute :undefined == :global.whereis_name(:players)
   end
   
 end
