@@ -47,8 +47,7 @@ defmodule GameCommander do
     track_phase(context, :finish)
   end
   def play(phase, context, phases) do
-    context = Map.merge(context, %{phase: phase})
-    context = track_phase(context, phase)
+    context = set_phase(context, phase)
 
     phase_action = Keyword.get(phases, phase)
     phase_action_module = :erlang.fun_info(phase_action)[:module]
@@ -73,6 +72,12 @@ defmodule GameCommander do
     pause(context[:tick_rate_ms])
 
     play(new_phase, context, phases)
+  end
+
+  defp set_phase(context, phase) do
+    context
+      |> Map.merge(%{phase: phase})
+      |> track_phase(phase)
   end
 
   defp update_phase(phase_context = %{new_phase: new_phase}, _) do
