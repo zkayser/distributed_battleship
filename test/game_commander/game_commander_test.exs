@@ -17,7 +17,7 @@ defmodule GameCommanderTest do
     test "trigger an action on a tick" do
       context = GameCommander.play(:none,
         %{
-            GameCommanderTest => %{ test_phases: [:finish] }
+            :none => %{ test_phases: [:finish] }
         }, [none: &GameCommanderTest.fake_phase/1])
 
       assert context.tick_count == 1
@@ -31,7 +31,8 @@ defmodule GameCommanderTest do
 
       context = GameCommander.play(:none, 
         %{         
-          GameCommanderTest => %{test_phases: [:none, :finish]}
+          :none => %{test_phases: [:none,:finish]},
+          :finish => %{test_phases: []}
         }, phases)
 
       assert context.tick_count == 2
@@ -44,19 +45,22 @@ defmodule GameCommanderTest do
         {name, &GameCommanderTest.fake_phase/1}
       end)
 
-      context = GameCommander.play(:none, 
-        %{
-          GameCommanderTest => %{test_phases: GameCommander.phase_names}
-        }, phases)
+      context = %{}
+        |> Map.merge(%{none:                %{test_phases: [:waiting_for_players]}})
+        |> Map.merge(%{waiting_for_players: %{test_phases: [:start_game]}})
+        |> Map.merge(%{start_game:          %{test_phases: [:adding_ships]}})
+        |> Map.merge(%{adding_ships:        %{test_phases: [:taking_turns]}})
+        |> Map.merge(%{taking_turns:        %{test_phases: [:feedback]}})
+        |> Map.merge(%{feedback:            %{test_phases: [:scoreboard]}})
+        |> Map.merge(%{scoreboard:          %{test_phases: [:finish]}})
 
-      assert context.tick_count == 8
+      context = GameCommander.play(:none, context, phases)
+
+      assert context.tick_count == 7
     end
 
     test "dont chnage phase is there is no new_state" do
-      context = GameCommander.play(
-        :none, 
-        %{ GameCommanderTest => %{} },
-        [none: &GameCommanderTest.fake_phase/1])
+      context = GameCommander.play( :none, %{ :none => %{} }, [none: &GameCommanderTest.fake_phase/1])
 
       assert context.track_phase == [:none, :none, :finish]
     end
