@@ -49,24 +49,14 @@ defmodule GameCommander do
   def play(phase, context, phases) do
     context = set_phase(context, phase)
 
-    phase_action = Keyword.get(phases, phase)
-    phase_action_module = :erlang.fun_info(phase_action)[:module]
-
-    phase_context = case context do
-      %{^phase_action_module => phase_context} -> phase_context
-      _                                        -> %{}
-    end
+    {phase_action, phase_context, phase_action_module} = allocate_phase_context(context, phase, phases)
 
     phase_context = phase_action.(phase_context)
 
     {phase_context, new_phase} = update_phase(phase_context, phase)
-    
-    context = 
-      context
-      |> update_in([phase_action_module], fn _ -> phase_context end)
-      |> Map.merge(%{phase: new_phase})
-      |> Map.update(:tick_count, 1, &(&1 + 1))
 
+    context = update_context(context, phase_context, phase_action_module, new_phase)
+    
     Logger.debug("#{__MODULE__}: PHASE #{phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
 
     pause(context[:tick_rate_ms])
@@ -80,11 +70,29 @@ defmodule GameCommander do
       |> track_phase(phase)
   end
 
+  defp allocate_phase_context(context, phase, phases) do
+    phase_action = Keyword.get(phases, phase)
+    phase_action_module = :erlang.fun_info(phase_action)[:module]
+
+    phase_context = case context do
+      %{^phase_action_module => phase_context} -> phase_context
+      _                                        -> %{}
+    end
+
+    {phase_action, phase_context, phase_action_module}
+  end
+
   defp update_phase(phase_context = %{new_phase: new_phase}, _) do
     {Map.delete(phase_context, :new_phase), new_phase }
   end
   defp update_phase(phase_context, phase) do
     {phase_context, phase}
+  end
+
+  defp update_context(context, phase_context, phase_action_module, new_phase) do
+    context
+    |> Map.merge(%{phase_action_module => phase_context, phase: new_phase})
+    |> Map.update(:tick_count, 1, &(&1 + 1))
   end
 
   defp pause(nil), do: :ok
