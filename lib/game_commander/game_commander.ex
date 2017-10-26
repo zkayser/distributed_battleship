@@ -44,33 +44,74 @@ defmodule GameCommander do
   end
 
   def play(:finish, context, _) do
-    track_phase(context, :finish)
+    Organize.track_phase(context, :finish)
   end
   def play(phase, context, phases) do
     context = 
       context
-      |> for_phase(phase)
-      |> run_phase(phases)
-      |> update_tick_count()
-      |> wait_for_tick()
-      |> logger()
+      |> Organize.for_phase(phase)
+      |> Organize.run_phase(phases)
+      |> Organize.update_tick_count()
+      |> Organize.wait_for_tick()
+      |> Organize.logger()
     
     play(context.phase, context, phases)
   end
+end
 
-  defp for_phase(context, phase) do
+defmodule Organize do
+  require Logger
+
+  def for_phase(context, phase) do
     context
       |> Map.merge(%{phase: phase})
       |> track_phase(phase)
   end
 
-  defp run_phase(context, phases) do
-    for_phase_context(context)
-    |> run_phase_action(context.phase, phases)
-    |> update_context(context) 
+  def run_phase(context, phases) do
+    Phase.for_phase_context(context)
+    |> Phase.run_phase_action(context.phase, phases)
+    |> Phase.update_context(context) 
   end
 
-  defp for_phase_context(context) do
+  def update_tick_count(context) do
+    context
+    |> Map.update(:tick_count, 1, &(&1 + 1))
+  end
+
+  def wait_for_tick(context) do
+    pause(context[:tick_rate_ms])
+    context
+  end
+
+  def logger(context = %{old_phase: old_phase, new_phase: new_phase}) do
+    Logger.debug("#{__MODULE__}: PHASE #{old_phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
+    context
+  end
+  def logger(context = %{new_phase: new_phase}) do
+    Logger.debug("#{__MODULE__}: PHASE _____ => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
+    context
+  end
+  def logger(context) do
+    Logger.debug("#{__MODULE__}: PHASE _____ => _____ : #{inspect Map.delete(context, :track_phase)}")
+    context
+  end
+
+  def pause(nil), do: :ok
+  def pause(tick_rate_ms) do
+    :timer.sleep(tick_rate_ms)
+  end
+
+  def track_phase(context = %{track_phase: track_phase}, phase) do
+    %{context | track_phase: track_phase ++ [phase]}
+  end
+  def track_phase(context, phase) do
+    Map.merge(context, %{track_phase: [phase]})
+  end
+end
+
+defmodule Phase do
+  def for_phase_context(context) do
     phase = context.phase
     case context do
       %{^phase => phase_context} -> phase_context
@@ -78,52 +119,16 @@ defmodule GameCommander do
     end
   end
 
-  defp run_phase_action(phase_context, phase, phases) do
+  def run_phase_action(phase_context, phase, phases) do
     phase_action = Keyword.get(phases, phase)
     phase_action.(phase_context)
   end
 
-  defp update_context(phase_context = %{new_phase: new_phase}, context) do
+  def update_context(phase_context = %{new_phase: new_phase}, context) do
     Map.merge(context, %{context.phase => phase_context, old_phase: context.phase, phase: new_phase})
   end
-  defp update_context(phase_context, context) do
+  def update_context(phase_context, context) do
     Map.merge(context, %{context.phase => phase_context, old_phase: context.phase})
   end
-
-  defp update_tick_count(context) do
-    context
-    |> Map.update(:tick_count, 1, &(&1 + 1))
-  end
-
-  defp wait_for_tick(context) do
-    pause(context[:tick_rate_ms])
-    context
-  end
-
-  defp logger(context = %{old_phase: old_phase, new_phase: new_phase}) do
-    Logger.debug("#{__MODULE__}: PHASE #{old_phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
-    context
-  end
-  defp logger(context = %{new_phase: new_phase}) do
-    Logger.debug("#{__MODULE__}: PHASE _____ => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
-    context
-  end
-  defp logger(context) do
-    Logger.debug("#{__MODULE__}: PHASE _____ => _____ : #{inspect Map.delete(context, :track_phase)}")
-    context
-  end
-
-  defp pause(nil), do: :ok
-  defp pause(tick_rate_ms) do
-    :timer.sleep(tick_rate_ms)
-  end
-
-  defp track_phase(context = %{track_phase: track_phase}, phase) do
-    %{context | track_phase: track_phase ++ [phase]}
-  end
-  defp track_phase(context, phase) do
-    Map.merge(context, %{track_phase: [phase]})
-  end
 end
-
 
