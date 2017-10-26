@@ -11,7 +11,6 @@ defmodule WaitingForPlayers do
     {:ok, registered_players} = Players.registered_players(pid)
 
     phase_context = Map.merge(phase_context, %{
-      new_phase: :waiting_for_players,
       player_count: player_count,
       registered_players: registered_players
     })
@@ -28,7 +27,6 @@ defmodule WaitingForPlayers do
     pid = Players.start()
 
     new_phase_context = %{
-      new_phase: :waiting_for_players,
       players_pid: pid,
       player_count: 0,
       wait_max: 60,

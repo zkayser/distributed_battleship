@@ -7,7 +7,6 @@ defmodule WaitingForPlayersTest do
 
     Players.stop(phase_context.players_pid)
 
-    assert phase_context.new_phase == :waiting_for_players
     assert phase_context.player_count == 0
   end
 
@@ -20,7 +19,6 @@ defmodule WaitingForPlayersTest do
 
     Players.stop(phase_context.players_pid)
 
-    assert phase_context.new_phase == :waiting_for_players
     assert phase_context.player_count == 0
   end
 
