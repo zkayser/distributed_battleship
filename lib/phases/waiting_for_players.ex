@@ -15,8 +15,9 @@ defmodule WaitingForPlayers do
       registered_players: registered_players
     })
 
+    wait_time = DateTime.diff(DateTime.utc_now, wait_start)
     phase_context = cond do
-      DateTime.diff(DateTime.utc_now, wait_start) >= wait_max -> Map.merge(phase_context, %{new_phase: :start_game})
+      wait_time >= wait_max -> Map.merge(phase_context, %{new_phase: :start_game})
       true -> phase_context
     end
 
