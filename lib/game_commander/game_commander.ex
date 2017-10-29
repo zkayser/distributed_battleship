@@ -84,11 +84,11 @@ defmodule Organize do
     context
   end
 
-  def logger(context = %{old_phase: old_phase, new_phase: new_phase}) do
+  def logger(context = %{old_phase: old_phase, phase: new_phase}) do
     Logger.debug("#{__MODULE__}: PHASE #{old_phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
     context
   end
-  def logger(context = %{new_phase: new_phase}) do
+  def logger(context = %{phase: new_phase}) do
     Logger.debug("#{__MODULE__}: PHASE _____ => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
     context
   end
