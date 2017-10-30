@@ -61,13 +61,13 @@ defmodule Players.Server do
   end
 
   defp run({:register, player_name, from_pid}, players) do
-    players = Map.merge(players, %{player_name => true})
+    players = Map.merge(players, %{player_name => from_pid})
     send from_pid, {:ok, "Now there are #{players |> Map.keys |> length} players"}
     {:continue, players }
   end
 
   defp run({:registered_players, from_pid}, players) do
-    send from_pid, {:ok, Map.keys(players)}
+    send from_pid, {:ok, players}
     {:continue, players }
   end
 
