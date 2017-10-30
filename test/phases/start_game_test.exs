@@ -22,5 +22,13 @@ defmodule StartGameTest do
 
   	assert %{"Bob" => self()} == phase_context.registered_players
   end
+
+  test "sends messages to player nodes", context do
+  	Players.register(context[:players_pid], "Bob")
+
+  	StartGame.tick(%{})
+
+  	assert_receive {"congratulations", 10, 20}
+  end
 end
 
