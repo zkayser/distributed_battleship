@@ -6,7 +6,7 @@ defmodule StartGame do
 
   	notify_players(registered_players)
 
-    Map.merge(phase_context, %{registered_players: registered_players})
+    Map.merge(phase_context, %{registered_players: registered_players, new_phase: :adding_ships})
   end
 
   defp players_pid do

@@ -21,6 +21,7 @@ defmodule StartGameTest do
   	phase_context = StartGame.tick(%{})
 
   	assert %{"Bob" => self()} == phase_context.registered_players
+    assert phase_context.new_phase == :adding_ships
   end
 
   test "sends messages to player nodes", context do
