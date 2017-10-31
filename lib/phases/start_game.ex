@@ -14,8 +14,9 @@ defmodule StartGame do
   end
 
   defp notify_players(registered_players) do
+    ocean_size = Enum.count(Map.keys(registered_players)) * 10
+
     for pid <- Map.values(registered_players) do
-      ocean_size = Enum.count(Map.keys(registered_players)) * 10
       send pid, {"congratulations", ocean_size, 20}
     end
   end
