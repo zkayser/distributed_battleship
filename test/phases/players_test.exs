@@ -5,18 +5,16 @@ defmodule PlayersTest do
     pid = Players.start()
 
     on_exit(fn -> Players.stop(pid) end)
-
-    [pid: pid]
   end
 
-  test "get player count", context do
-    assert {:ok, 0} == Players.player_count(context.pid)
+  test "get player count" do
+    assert {:ok, 0} == Players.player_count()
   end
 
-  test "register player", context do
-    assert {:ok, "Now there are 1 players"} == Players.register(context.pid, "Ed")
+  test "register player" do
+    assert {:ok, "Now there are 1 players"} == Players.register("Ed")
 
-    assert {:ok, %{"Ed" => self()}} == Players.registered_players(context.pid)
+    assert {:ok, %{"Ed" => self()}} == Players.registered_players()
   end
 
   test "service is registered" do

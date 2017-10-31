@@ -9,18 +9,22 @@ defmodule Players do
     pid
   end
 
+  def stop(), do: stop(:global.whereis_name(:players))
   def stop(pid) do
     send pid, :stop
   end
 
+  def player_count(), do: player_count(:global.whereis_name(:players))
   def player_count(pid) do
     player_request(pid, [:player_count])
   end
 
+  def register(player_name), do: register(:global.whereis_name(:players), player_name)
   def register(pid, player_name) do
     player_request(pid, [:register, player_name])
   end
 
+  def registered_players(), do: registered_players(:global.whereis_name(:players))
   def registered_players(pid) do
     player_request(pid, [:registered_players])
   end
