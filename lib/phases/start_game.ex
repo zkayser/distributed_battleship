@@ -4,9 +4,9 @@ defmodule StartGame do
   def tick(phase_context) do
     {:ok, registered_players} = Players.registered_players(players_pid())
 
-    notify_players(registered_players)
+    ocean_size = notify_players(registered_players)
 
-    Map.merge(phase_context, %{registered_players: registered_players, new_phase: :adding_ships})
+    Map.merge(phase_context, %{registered_players: registered_players, new_phase: :adding_ships, ocean_size: ocean_size})
   end
 
   defp players_pid do
@@ -19,6 +19,8 @@ defmodule StartGame do
     for pid <- Map.values(registered_players) do
       send pid, {"congratulations", ocean_size, 20}
     end
+
+    ocean_size
   end
 end
 

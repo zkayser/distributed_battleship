@@ -22,6 +22,7 @@ defmodule StartGameTest do
 
     assert %{"Bob" => self()} == phase_context.registered_players
     assert phase_context.new_phase == :adding_ships
+    assert phase_context.ocean_size == 1 * 10
   end
 
   test "sends messages to player nodes", context do
