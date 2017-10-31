@@ -9,7 +9,7 @@ defmodule StartGameTest do
     [players_pid: players_pid]
   end
 
-  test "start game", context do
+  test "start game" do
     phase_context = StartGame.tick(%{})
 
     assert phase_context.registered_players == %{}
