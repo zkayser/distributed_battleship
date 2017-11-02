@@ -9,6 +9,10 @@ defmodule PlayersTest do
     [pid: pid]
   end
 
+  test "stop the service" do
+    Players.stop()
+  end
+
   test "get player count", context do
     assert {:ok, 0} == Players.player_count(context.pid)
   end

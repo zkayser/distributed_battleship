@@ -1,6 +1,10 @@
 defmodule GameCommanderTest do
   use ExUnit.Case
 
+  setup() do
+    on_exit(fn -> Players.stop() end)
+  end
+
   def fake_phase(phase_context = %{test_phases: [next_phase | rest_of_phases]}) do
     Map.merge(phase_context, %{new_phase: next_phase, test_phases: rest_of_phases})
   end
@@ -74,6 +78,14 @@ defmodule GameCommanderTest do
 
     Enum.each GameCommander.phase_names(), fn phase ->
       assert GameCommander.valid_phase?(phase)
+    end
+  end
+
+  describe "initialize the services" do
+    test "players service is started" do
+      context = GameCommander.initialize(%{})
+
+      assert context.service.players_pid, "didn't generate a players pid"
     end
   end
   

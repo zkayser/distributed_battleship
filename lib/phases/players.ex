@@ -9,6 +9,8 @@ defmodule Players do
     pid
   end
 
+  def stop(), do: stop(:global.whereis_name(:players))
+  def stop(:undefined), do: :undefined
   def stop(pid) do
     send pid, :stop
   end
