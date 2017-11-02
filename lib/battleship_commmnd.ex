@@ -5,7 +5,7 @@ defmodule Battleship.Command do
          {:ok, pid}     <- lookup_service(connected)
     do
       {:ok, message} = command_function.(pid)
-      IO.puts message
+      IO.inspect message
     else
       {:error, message} -> IO.puts message
       message           -> IO.inspect message

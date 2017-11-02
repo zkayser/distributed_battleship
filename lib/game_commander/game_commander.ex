@@ -36,16 +36,20 @@ defmodule GameCommander do
   end
 
   def initialize(context) do
-    context
+    context = context
     |> Map.merge(%{service: %{players_pid: Players.start()}})
+
+    Logger.info("Players service starting: #{inspect context.service}")
+
+    context
   end
 
   def play() do
-    play(:none, Context.new(), @phases)
+    context = Context.new() |> initialize()
+    play(:none, context, @phases)
   end
 
   def play(phase, context) do
-    context = initialize(context)
     play(phase, context, @phases)
   end
 
