@@ -53,14 +53,8 @@ defmodule GameCommander do
     Organize.track_phase(context, :finish)
   end
   def play(phase, context, phases) do
-    context = 
-      context
-      |> Organize.for_phase(phase)
-      |> Organize.run_phase(phases)
-      |> Organize.update_tick_count()
-      |> Organize.wait_for_tick()
-      |> Organize.logger()
-    
+    context = Organize.play(phase, context, phases)
+   
     play(context.phase, context, phases)
   end
 end
@@ -68,43 +62,52 @@ end
 defmodule Organize do
   require Logger
 
-  def for_phase(context, phase) do
+  def play(phase, context, phases) do
+    context
+    |> for_phase(phase)
+    |> run_phase(phases)
+    |> update_tick_count()
+    |> wait_for_tick()
+    |> logger()
+  end
+
+  defp for_phase(context, phase) do
     context
       |> Map.merge(%{phase: phase})
       |> track_phase(phase)
   end
 
-  def run_phase(context, phases) do
+  defp run_phase(context, phases) do
     Phase.for_phase_context(context)
     |> Phase.run_phase_action(context.phase, phases)
     |> Phase.update_context(context) 
   end
 
-  def update_tick_count(context) do
+  defp update_tick_count(context) do
     context
     |> Map.update(:tick_count, 1, &(&1 + 1))
   end
 
-  def wait_for_tick(context) do
+  defp wait_for_tick(context) do
     pause(context[:tick_rate_ms])
     context
   end
 
-  def logger(context = %{old_phase: old_phase, phase: new_phase}) do
+  defp logger(context = %{old_phase: old_phase, phase: new_phase}) do
     Logger.debug("#{__MODULE__}: PHASE #{old_phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
     context
   end
-  def logger(context = %{phase: new_phase}) do
+  defp logger(context = %{phase: new_phase}) do
     Logger.debug("#{__MODULE__}: PHASE _____ => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
     context
   end
-  def logger(context) do
+  defp logger(context) do
     Logger.debug("#{__MODULE__}: PHASE _____ => _____ : #{inspect Map.delete(context, :track_phase)}")
     context
   end
 
-  def pause(nil), do: :ok
-  def pause(tick_rate_ms) do
+  defp pause(nil), do: :ok
+  defp pause(tick_rate_ms) do
     :timer.sleep(tick_rate_ms)
   end
 
