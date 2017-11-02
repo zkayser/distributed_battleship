@@ -78,9 +78,7 @@ defmodule Organize do
   end
 
   defp run_phase(context, phases) do
-    Phase.for_phase_context(context)
-    |> Phase.run_phase_action(context.phase, phases)
-    |> Phase.update_context(context) 
+    Phase.run(context, phases)
   end
 
   defp update_tick_count(context) do
@@ -120,6 +118,12 @@ defmodule Organize do
 end
 
 defmodule Phase do
+  def run(context, phases) do
+    for_phase_context(context)
+    |> run_phase_action(context.phase, phases)
+    |> update_context(context) 
+  end
+
   def for_phase_context(context) do
     phase = context.phase
     case context do
