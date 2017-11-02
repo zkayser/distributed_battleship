@@ -4,13 +4,15 @@ defmodule StartGameTest do
   setup do
     players_pid = Players.start()
 
-    on_exit fn -> Players.stop(players_pid) end
+    on_exit fn -> Players.stop() end
 
     [players_pid: players_pid]
   end
 
-  test "start game" do
-    phase_context = StartGame.tick(%{})
+  test "start game", context do
+    phase_context = 
+      %{service: %{players_pid: context.players_pid}}
+      |> StartGame.tick()
 
     assert phase_context.registered_players == %{}
   end
@@ -18,7 +20,9 @@ defmodule StartGameTest do
   test "add player", context do
     Players.register(context[:players_pid], "Bob")
 
-    phase_context = StartGame.tick(%{})
+    phase_context = 
+      %{service: %{players_pid: context.players_pid}}
+      |> StartGame.tick()
 
     assert %{"Bob" => self()} == phase_context.registered_players
     assert phase_context.new_phase == :adding_ships
@@ -28,7 +32,8 @@ defmodule StartGameTest do
   test "sends messages to player nodes", context do
     Players.register(context[:players_pid], "Bob")
 
-    StartGame.tick(%{})
+    %{service: %{players_pid: context.players_pid}}
+    |> StartGame.tick()
 
     assert_receive {"congratulations", 10, 20}
   end
