@@ -88,6 +88,22 @@ defmodule GameCommanderTest do
       assert context.service.players_pid, "didn't generate a players pid"
     end
   end
+
+  describe "context to phase interface" do
+    test "add service to phase data" do
+      context = Phase.run(%{phase: :none, service: %{}}, [none: &GameCommanderTest.fake_phase/1]) 
+
+      assert context.none
+      assert context.none.service
+    end
+
+    test "add service to phase data when there is none" do
+      context = Phase.run(%{phase: :none}, [none: &GameCommanderTest.fake_phase/1]) 
+
+      assert context.none
+      refute Map.has_key?(context.none, :service)
+    end
+  end
   
 end
 
