@@ -83,7 +83,7 @@ defmodule GameCommanderTest do
 
   describe "initialize the services" do
     test "players service is started" do
-      context = GameCommander.initialize(%{})
+      context = GameCommander.initialize()
 
       assert context.service.players_pid, "didn't generate a players pid"
     end

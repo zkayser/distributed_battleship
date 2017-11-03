@@ -35,9 +35,10 @@ defmodule GameCommander do
     spawn_link(__MODULE__, :play, [])
   end
 
-  def initialize(context) do
-    context = context
-    |> Map.merge(%{service: %{players_pid: Players.start()}})
+  def initialize() do
+    context = 
+      Context.new() 
+      |> Map.merge(%{service: %{players_pid: Players.start()}})
 
     Logger.info("Players service starting: #{inspect context.service}")
 
@@ -45,8 +46,7 @@ defmodule GameCommander do
   end
 
   def play() do
-    context = Context.new() |> initialize()
-    play(:none, context, @phases)
+    play(:none, initialize(), @phases)
   end
 
   def play(phase, context) do
