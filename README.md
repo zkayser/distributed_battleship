@@ -26,7 +26,7 @@ Players are told its time to start with the ocean size, and the number of ship c
 
 * Player ships
 
-Players send in shop location choises,
+Players send in ship location choises.
 
 * Player turns
 
