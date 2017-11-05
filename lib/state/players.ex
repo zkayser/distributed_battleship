@@ -46,7 +46,7 @@ defmodule Players.Server do
 
   def loop(:stop, _) do end
   def loop(:continue, players) do
-    {next, players } = receive do
+    {next, players} = receive do
       command -> run(command, players)
     end
 
