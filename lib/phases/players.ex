@@ -63,6 +63,7 @@ defmodule Players.Server do
   end
 
   defp run({:register, player_name, from_pid}, players) do
+    Logger.info("Registered #{inspect from_pid}: #{player_name}")
     players = Map.merge(players, %{player_name => from_pid})
     send from_pid, {:ok, "Now there are #{players |> Map.keys |> length} players"}
     {:continue, players }
