@@ -38,7 +38,12 @@ defmodule GameCommander do
   def initialize() do
     context = 
       Context.new() 
-      |> Map.merge(%{service: %{players_pid: Players.start()}})
+      |> Map.merge(%{service: 
+        %{
+          players_pid: Players.start(),
+          ocean_pid:   Ocean.start()
+        }
+      })
 
     Logger.info("Players service starting: #{inspect context.service}")
 

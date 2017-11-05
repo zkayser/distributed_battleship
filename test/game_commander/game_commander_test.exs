@@ -86,6 +86,7 @@ defmodule GameCommanderTest do
       context = GameCommander.initialize()
 
       assert context.service.players_pid, "didn't generate a players pid"
+      assert context.service.ocean_pid, "didn't generate a ocean pid"
     end
   end
 
