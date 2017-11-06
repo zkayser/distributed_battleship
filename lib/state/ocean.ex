@@ -2,72 +2,49 @@ defmodule Ocean do
   require Logger
 
   def start() do
-    pid = spawn_link(Ocean.Server, :loop, [:continue, %{ships: []}])
-
-    :global.register_name(:ocean, pid)
+    {:ok, pid} = GenServer.start_link(Ocean.Server, %{ships: []}, name: {:global, :ocean})
 
     pid
   end
 
   def stop(), do: stop(:global.whereis_name(:ocean))
+  def stop(:undefined), do: {:ok, "Already Stopped"}
   def stop(pid) do
-    send pid, {:stop, self()}
+    case Process.alive?(pid) do
+      true  -> GenServer.call(pid, {:stop})
+      false -> {:ok, "Aleady Stopped"}
+    end
   end
 
   def ships(pid) do
-    ocean_request(pid, [:ships])
+    GenServer.call(pid, {:ships})
   end
 
   def add_ship(pid, player, from_lat, from_long, to_lat, to_long) do
-    ocean_request(pid, [:add_ship, player, from_lat, from_long, to_lat, to_long])
-  end
-
-  defp ocean_request(pid, message) do
-    send pid, List.to_tuple(message ++ [self()])
-    receive do
-      {:ok, value} -> {:ok, value}
-      unexpected   -> Logger.error("Ocean response unexpected: #{inspect unexpected}")
-    after
-      1_000 -> 
-        Logger.warn("Ocean process did not respond")
-        -1
-    end
+    GenServer.call(pid, {:add_ship, player, from_lat, from_long, to_lat, to_long})
   end
 end
 
 defmodule Ocean.Server do
+  use GenServer
   require Logger
 
-  def loop(:stop, _) do end
-  def loop(:continue, state) do
-    {next, state } = receive do
-      command -> 
-        Logger.debug("Ocean Message: #{inspect command}")
-        run(command, state)
-    end
-
-    loop(next, state)
+  def handle_call({:stop}, _from_pid, state) do
+    {:stop, :normal, {:ok, "Stopped"}, state}
   end
 
-  defp run({:stop, from_pid}, state) do
-    send from_pid, {:ok, "Stopped"}
-    {:stop, state}
+  def handle_call({:ships}, _from_pid, state) do
+    {:reply, {:ok, state.ships}, state} 
   end
 
-  defp run({:ships, from_pid}, state) do
-    send from_pid, {:ok, state.ships}
-    {:continue, state}
-  end
-
-  defp run({:add_ship, player, from_lat, from_long, to_lat, to_long, from_pid}, state) do
+  def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state) do
     state = Map.merge(state, %{ships: state.ships ++ [{player, from_lat, from_long, to_lat, to_long}]})
-    send from_pid, {:ok, "Added"}
-    {:continue, state}
+    {:reply, {:ok, "Added"}, state} 
   end
 
-  defp run(command, state) do
+  def handle_call(command, _from_pid, state) do
     Logger.info("Invalid command #{inspect command} : #{inspect state}")
-    {:continue, state}
+    {:noreply, state}
   end
 
 end

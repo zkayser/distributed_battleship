@@ -10,9 +10,7 @@ defmodule OceanTest do
   end
 
   test "stop the service" do
-    Ocean.stop()
-
-    assert_receive {:ok, "Stopped"}
+    {:ok, "Stopped"} = Ocean.stop()
   end
 
   test "add a ship", context do
@@ -25,8 +23,8 @@ defmodule OceanTest do
   end
 
   test "add more than one ship", context do
-    {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred",  0, 0, 0, 2)
-    {:ok, "Added"} = Ocean.add_ship(context.pid, "Jim", 1, 0, 0, 4)
+    {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 2)
+    {:ok, "Added"} = Ocean.add_ship(context.pid, "Jim",  1, 0, 0, 4)
 
     {:ok, ships} = Ocean.ships(context.pid)
     assert {"Fred", 0, 0, 0, 2} in ships
