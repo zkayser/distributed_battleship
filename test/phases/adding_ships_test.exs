@@ -21,7 +21,7 @@ defmodule AddingShipsTest do
       |> AddingShips.tick()
       |> AddingShips.tick()
 
-    assert phase_context.new_phase == :player_taking_turns
+    assert phase_context.new_phase == :taking_turns
   end
 end
 

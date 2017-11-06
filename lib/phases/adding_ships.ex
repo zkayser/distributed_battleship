@@ -4,7 +4,7 @@ defmodule AddingShips do
   def tick(phase_context = %{wait_max: wait_max, wait_start: wait_start}) do
     wait_time = DateTime.diff(DateTime.utc_now, wait_start)
     cond do
-      wait_time >= wait_max -> Map.merge(phase_context, %{new_phase: :player_taking_turns})
+      wait_time >= wait_max -> Map.merge(phase_context, %{new_phase: :taking_turns})
       true                  -> Map.merge(phase_context, %{new_phase: :adding_ships})
     end
   end

@@ -7,7 +7,7 @@ defmodule GameCommander do
     none:                &StartApp.tick/1,
     waiting_for_players: &WaitingForPlayers.tick/1,
     start_game:          &StartGame.tick/1,
-    adding_ships:        &GameCommander.noop/1,
+    adding_ships:        &AddingShips.tick/1,
     taking_turns:        &GameCommander.noop/1,
     feedback:            &GameCommander.noop/1,
     scoreboard:          &GameCommander.noop/1,
