@@ -2,81 +2,58 @@ defmodule Players do
   require Logger
 
   def start() do
-    pid = spawn_link(Players.Server, :loop, [:continue, %{}])
-
-    :global.register_name(:players, pid)
+    {:ok, pid} = GenServer.start(Players.Server, %{}, name: {:global, :players})
 
     pid
   end
 
   def stop(), do: stop(:global.whereis_name(:players))
-  def stop(:undefined), do: :undefined
+  def stop(:undefined), do: {:ok, "Aleady Stopped"}
   def stop(pid) do
-    send pid, :stop
+    case Process.alive?(pid) do
+      true  -> GenServer.call(pid, {:stop})
+      false -> {:ok, "Already Stopped"}
+    end
   end
 
   def player_count(pid) do
-    player_request(pid, [:player_count])
+    GenServer.call(pid, {:player_count})
   end
 
   def register(pid, player_name) do
-    player_request(pid, [:register, player_name])
+    GenServer.call(pid, {:register, player_name})
   end
 
   def registered_players(pid) do
-    player_request(pid, [:registered_players])
+    GenServer.call(pid, {:registered_players})
   end
-
-  defp player_request(pid, message) do
-    send pid, List.to_tuple(message ++ [self()])
-    receive do
-      {:ok, value} -> {:ok, value}
-      unexpected   -> Logger.error("Player response unexpected: #{inspect unexpected}")
-    after
-      1_000 -> 
-        Logger.warn("Player process did not respond")
-        -1
-    end
-  end
-
 end
 
 defmodule Players.Server do
+  use GenServer
   require Logger
 
-  def loop(:stop, _) do end
-  def loop(:continue, players) do
-    {next, players} = receive do
-      command -> run(command, players)
-    end
-
-    loop(next, players)
+  def handle_call({:stop}, _from_pid, players) do
+    {:stop, :normal, {:ok, "Stopped"}, players}
   end
 
-  defp run({:stop, _ }, players) do
-    {:stop, players}
+  def handle_call({:player_count}, _from_pid,  players) do
+    {:reply, {:ok, length(Node.list)}, players}
   end
 
-  defp run({:player_count, from_pid }, players) do
-    send from_pid, {:ok, length(Node.list)}
-    {:continue, players }
-  end
-
-  defp run({:register, player_name, from_pid}, players) do
+  def handle_call({:register, player_name}, {from_pid, _}, players) do
     Logger.info("Registered #{inspect from_pid}: #{player_name}")
     players = Map.merge(players, %{player_name => from_pid})
-    send from_pid, {:ok, "Now there are #{players |> Map.keys |> length} players"}
-    {:continue, players }
+    {:reply, {:ok, "Now there are #{players |> Map.keys |> length} players"}, players}
   end
 
-  defp run({:registered_players, from_pid}, players) do
-    send from_pid, {:ok, players}
-    {:continue, players }
+  def handle_call({:registered_players}, _from_pid, players) do
+    {:reply, {:ok, players}, players}
   end
 
-  defp run(message, players) do
+  def handle_call(message, _from_pid, players) do
     Logger.warn("Players message not supported: #{inspect message}")
-    {:continue, players }
+    {:noreply, players}
   end
 
 end
