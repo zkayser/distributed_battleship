@@ -18,8 +18,8 @@ defmodule Ocean do
     ocean_request(pid, [:ships])
   end
 
-  def add_ship(pid, from_lat, from_long, to_lat, to_long) do
-    ocean_request(pid, [:add_ship, from_lat, from_long, to_lat, to_long])
+  def add_ship(pid, player, from_lat, from_long, to_lat, to_long) do
+    ocean_request(pid, [:add_ship, player, from_lat, from_long, to_lat, to_long])
   end
 
   defp ocean_request(pid, message) do
@@ -59,8 +59,8 @@ defmodule Ocean.Server do
     {:continue, state}
   end
 
-  defp run({:add_ship, from_lat, from_long, to_lat, to_long, from_pid}, state) do
-    state = Map.merge(state, %{ships: state.ships ++ [{from_lat, from_long, to_lat, to_long}]})
+  defp run({:add_ship, player, from_lat, from_long, to_lat, to_long, from_pid}, state) do
+    state = Map.merge(state, %{ships: state.ships ++ [{player, from_lat, from_long, to_lat, to_long}]})
     send from_pid, {:ok, "Added"}
     {:continue, state}
   end
