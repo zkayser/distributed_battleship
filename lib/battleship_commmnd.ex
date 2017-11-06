@@ -1,8 +1,8 @@
 defmodule Battleship.Command do
 
-  def command(command_function) do
+  def command(service, command_function) do
     with connected      <- connect(),
-         {:ok, pid}     <- lookup_service(connected)
+         {:ok, pid}     <- lookup_service(service, connected)
     do
       {:ok, message} = command_function.(pid)
       IO.inspect message
@@ -17,15 +17,15 @@ defmodule Battleship.Command do
     Node.connect(:"commander@#{hostname}")
   end
 
-  defp lookup_service(:ignored) do
+  defp lookup_service(_, :ignored) do
     {:error, "Battleships is not running"}
   end
-  defp lookup_service(false) do
+  defp lookup_service(_, false) do
     {:error, "Battleships is not running"}
   end
-  defp lookup_service(true) do
+  defp lookup_service(service, true) do
     :timer.sleep(1000)
-    the_pid(:global.whereis_name(:players))
+    the_pid(:global.whereis_name(service))
   end
 
   defp the_pid(:undefined) do

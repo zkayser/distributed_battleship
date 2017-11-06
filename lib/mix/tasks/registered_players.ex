@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Battleship.RegisteredPlayers do
   @shortdoc "A list of registered players"
 
   def run(_) do
-    Battleship.Command.command(fn pid ->
+    Battleship.Command.command(:players, fn pid ->
       Players.registered_players(pid)
     end)
   end
