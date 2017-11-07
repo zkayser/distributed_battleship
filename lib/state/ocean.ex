@@ -48,13 +48,13 @@ defmodule Ocean.Server do
   end
 
   def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{size: size}) do
-    {reply, state } = case {
+    {reply, state} = case {
         from_lat >= 0, from_long >= 0, to_lat >= 0, to_long >= 0,
         from_lat < size, from_long < size, to_lat < size, to_long < size
       } do
       {true, true, true, true, true, true, true, true} -> 
         {{:ok, "Added"}, Map.merge(state, %{ships: state.ships ++ [{player, from_lat, from_long, to_lat, to_long}]})}
-      {_, _, _, _, _, _, _, _} -> 
+      _ -> 
         {{:error, "off the ocean"}, state }
     end
 
