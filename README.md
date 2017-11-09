@@ -1,4 +1,6 @@
-# distributed_battleship
+# Distributed Battleship
+
+   DOESN'T WORK YET
 
 ## Summary
 
@@ -11,6 +13,41 @@ and can interact with the commander with the following messsages:
 * The commander will inform the players its time to take a turn and the player will return an x,y guess.
 * Once all players have taken a turn the commander will cast a feedback message to each player about their individual success.
 * Then another turn will be initiated.
+
+## Setup
+
+Imaging a room full of eager Elixir programmers wanting to pit their battleships against their opponents. The game progresses like this.
+
+### Introduction
+
+First get over all the firewall issues with are bound to hurt. The game uses erlang clustering which uses the following ports.
+
+* 4369 for primary connections.
+* 9100 - 9200 for allocation to each player.
+
+### Play
+
+* Fingers off keyboard please.
+* Commander starts a new game.
+* Players connect.
+* The private UI shows the board as ships are added.
+* The public UI shows players names, a cound of the ships they are adding and an empty rippling ocean.
+* Commence firing.
+
+## Differences
+
+The rules for normal 2 player battleships work well but some changes are needed to scale to more people.
+
+* If you strike an opponents ship who should know about it. You should of coarse but if all players also know this then you can organize into attack groups which if better.
+* If you miss should your opponents know. Every guess improves the next players guess, unless there are no turns, just a free flow of bombs launched at random. Then seeing your opponents misses will slow you down, and make the game better.
+
+## Running
+
+There are a set of scripts that help the distributed game start. First start the server.
+
+  > bin/start_battleships.sh
+
+Then connect up the user interface for the 
 
 ## Game Commander Design
 
