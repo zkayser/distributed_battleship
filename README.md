@@ -23,7 +23,7 @@ Imaging a room full of eager Elixir programmers wanting to pit their battleships
 First get over all the firewall issues with are bound to hurt. The game uses erlang clustering which uses the following ports.
 
 * 4369 for primary connections.
-* 9100 - 9200 for allocation to each player.
+* 9000 - 9100 for allocation to each player.
 
 ### Play
 
