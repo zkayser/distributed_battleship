@@ -53,6 +53,11 @@ defmodule OceanTest do
       assert {"Jim", 1, 0, 1, 4} in ships
     end
 
+    @tag :skip
+    test "must only create horizontal or vertical ships" do
+
+    end
+
     test "ship can not be off the ocean", context do
       {:ok, ocean_size} = Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
@@ -83,8 +88,35 @@ defmodule OceanTest do
     end
   end
 
-  #describe "ships can not sit on other ships" do
-  #end
+  describe "ships can not sit on other ships - horizontal to norizontal" do
+    @tag :skip
+    test "can not touch the bow of another ship" do
+    end
+    @tag :skip
+    test "can not touch the stern of another ship" do
+    end
+  end
+
+  describe "ships can not sit on other ships - vertical to vertical" do
+    @tag :skip
+    test "can not touch the bow of another ship" do
+    end
+    @tag :skip
+    test "can not touch the stern of another ship" do
+    end
+  end
+
+  describe "ships can not sit on other ships - horizontal to vertical" do
+    @tag :skip
+    test "ships can not cross in the middle" do
+    end
+    @tag :skip
+    test "can not touch the bow of another ship" do
+    end
+    @tag :skip
+    test "can not touch the stern of another ship" do
+    end
+  end
 
 end
 
