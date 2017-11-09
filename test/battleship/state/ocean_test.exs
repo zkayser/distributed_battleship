@@ -46,11 +46,11 @@ defmodule OceanTest do
     test "add more than one ship", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
       {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 2)
-      {:ok, "Added"} = Ocean.add_ship(context.pid, "Jim",  1, 0, 0, 4)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Jim",  1, 0, 1, 4)
 
       {:ok, ships} = Ocean.ships(context.pid)
       assert {"Fred", 0, 0, 0, 2} in ships
-      assert {"Jim", 1, 0, 0, 4} in ships
+      assert {"Jim", 1, 0, 1, 4} in ships
     end
 
     test "ship can not be off the ocean", context do
@@ -74,14 +74,14 @@ defmodule OceanTest do
     end
   end
 
-  #describe "ship limit for players" do
-    #test "add too many ships", context do
-      #Ocean.size(context.pid, %{"player1" => true, "player2" => true})
-      #{:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
-      #{:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 1, 0, 1, 9)
-      #{:error, "ship limit exceeded: 21 > 20"} = Ocean.add_ship(context.pid, "Fred", 9, 0, 9, 0)
-    #end
-  #end
+  describe "ship limit for players" do
+    test "add too many ships", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 1, 0, 1, 9)
+      {:error, "ship limit exceeded: 21 > 20"} = Ocean.add_ship(context.pid, "Fred", 9, 0, 9, 0)
+    end
+  end
 
   #describe "ships can not sit on other ships" do
   #end
