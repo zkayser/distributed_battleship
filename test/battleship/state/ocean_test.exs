@@ -16,6 +16,22 @@ defmodule OceanTest do
     end
   end
 
+  describe "ocean size" do
+    test "set ocean size", context do
+      assert {:ok, 20} == Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+    end
+
+    test "set and retrieve the size", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+
+      assert {:ok, 20} == Ocean.size(context.pid)
+    end
+
+    test "we dont know the ocean size yet", context do
+      {:error, "how big the ocean blue"} = Ocean.add_ship(context.pid, "Ahab", 0, 0, 0, 2)
+    end
+  end
+
   describe "ships" do
     test "add a ship", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
@@ -37,7 +53,7 @@ defmodule OceanTest do
       assert {"Jim", 1, 0, 0, 4} in ships
     end
 
-    test "ship that is off the ocean", context do
+    test "ship can not be off the ocean", context do
       {:ok, ocean_size} = Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
       data = [
@@ -58,21 +74,17 @@ defmodule OceanTest do
     end
   end
 
-  describe "ocean size" do
-    test "set ocean size", context do
-      assert {:ok, 20} == Ocean.size(context.pid, %{"player1" => true, "player2" => true})
-    end
+  #describe "ship limit for players" do
+    #test "add too many ships", context do
+      #Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      #{:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
+      #{:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 1, 0, 1, 9)
+      #{:error, "ship limit exceeded: 21 > 20"} = Ocean.add_ship(context.pid, "Fred", 9, 0, 9, 0)
+    #end
+  #end
 
-    test "set and retrieve the size", context do
-      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+  #describe "ships can not sit on other ships" do
+  #end
 
-      assert {:ok, 20} == Ocean.size(context.pid)
-    end
-
-    test "we dont know the ocean size yet", context do
-      {:error, "how big the ocean blue"} = Ocean.add_ship(context.pid, "Ahab", 0, 0, 0, 2)
-    end
-  end
- 
 end
 
