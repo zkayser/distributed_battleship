@@ -1,5 +1,5 @@
-defmodule GameCommander do
-  alias GameCommander
+defmodule Commander do
+  alias Commander
 
   require Logger
 
@@ -8,10 +8,10 @@ defmodule GameCommander do
     waiting_for_players: &WaitingForPlayers.tick/1,
     start_game:          &StartGame.tick/1,
     adding_ships:        &AddingShips.tick/1,
-    taking_turns:        &GameCommander.noop/1,
-    feedback:            &GameCommander.noop/1,
-    scoreboard:          &GameCommander.noop/1,
-    finish:              &GameCommander.noop/1
+    taking_turns:        &Commander.noop/1,
+    feedback:            &Commander.noop/1,
+    scoreboard:          &Commander.noop/1,
+    finish:              &Commander.noop/1
   ]
 
   def noop(phase_context) do

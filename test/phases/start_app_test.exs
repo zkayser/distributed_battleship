@@ -5,7 +5,7 @@ defmodule StartAppTest do
     phase_context = StartApp.tick(%{})
 
     assert phase_context.new_phase == :waiting_for_players
-    assert GameCommander.valid_phase?(phase_context.new_phase)
+    assert Commander.valid_phase?(phase_context.new_phase)
   end
 end
 

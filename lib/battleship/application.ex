@@ -9,7 +9,7 @@ defmodule Battleship.Application do
   def start(_type, _args) do
     Logger.info "Starting Battleships"
 
-    GameCommander.start()
+    Commander.start()
 
     # List all child processes to be supervised
     children = [
