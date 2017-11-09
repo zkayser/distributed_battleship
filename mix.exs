@@ -1,9 +1,9 @@
-defmodule DistributedBattleship.Mixfile do
+defmodule Battleship.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :distributed_battleship,
+      app: :battleship,
       version: "0.1.0",
       elixir: "~> 1.5",
       start_permanent: Mix.env == :prod,
@@ -18,7 +18,7 @@ defmodule DistributedBattleship.Mixfile do
   def application do
     [
       extra_applications: [:logger],
-      mod: {DistributedBattleship.Application, []}
+      mod: {Battleship.Application, []}
     ]
   end
 

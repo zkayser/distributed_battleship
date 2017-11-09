@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :distributed_battleship, key: :value
+#     config :battleship, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:distributed_battleship, :key)
+#     Application.get_env(:battleship, :key)
 #
 # You can also configure a 3rd-party app:
 #
