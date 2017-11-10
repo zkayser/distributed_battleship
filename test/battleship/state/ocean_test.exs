@@ -88,10 +88,14 @@ defmodule OceanTest do
     end
   end
 
-  describe "ships can not sit on other ships - horizontal to norizontal" do
+  describe "ships can not sit on other ships - horizontal to horizontal" do
     @tag :skip
-    test "can not touch the bow of another ship" do
+    test "can not touch the bow of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
     end
+
     @tag :skip
     test "can not touch the stern of another ship" do
     end

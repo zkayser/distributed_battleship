@@ -59,7 +59,8 @@ defmodule Ocean.Server do
 
   def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size}) do
     {reply, state} = with {:ok} <- valid_ship(ocean_size, from_lat, from_long, to_lat, to_long),
-                          {:ok} <- valid_number_ships(player, from_lat, from_long, to_lat, to_long, ships)
+                          {:ok} <- valid_number_ships(player, from_lat, from_long, to_lat, to_long, ships),
+                          {:ok} <- valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships)
     do
         {{:ok, "Added"}, Map.merge(state, %{ships: another_ship(ships, player, from_lat, from_long, to_lat, to_long)})}
     else
@@ -101,6 +102,16 @@ defmodule Ocean.Server do
     end
   end
 
+  defp valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships) do
+    case Enum.count(ships, fn ship -> 
+      on_top_of(ship, from_lat, from_long, to_lat, to_long)
+    end) do
+      0 -> {:ok}
+      _ -> {:error, "there is another ship here"}
+    end
+
+  end
+
   defp count_players_ships(ships, player) do
     Enum.reduce(ships, 0, fn ship, count -> 
       case ship do
@@ -120,6 +131,17 @@ defmodule Ocean.Server do
 
   defp another_ship(ships, player, from_lat, from_long, to_lat, to_long) do
     ships ++ [{player, from_lat, from_long, to_lat, to_long}]
+  end
+
+  # Good
+  # 4,4 -> 4,6
+  # 5,4 -> 5,6
+  # 
+  # Overlapping
+  # 4,4 -> 4,6
+  # 4,6 -> 4,8
+  defp on_top_of(ship1, from_lat, from_long, to_lat, to_long) do
+    false
   end
 
 end
