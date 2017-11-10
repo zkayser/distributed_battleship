@@ -79,7 +79,31 @@ defmodule OceanTest do
     end
   end
 
+  describe "no diagonal ships" do
+    @tag :skip
+    test "from top left to bottom right" do
+    end
+    @tag :skip
+    test "from bottom left to top right" do
+    end
+    @tag :skip
+    test "from top right to bottom left" do
+    end
+    @tag :skip
+    test "from bottom right to top left" do
+    end
+  end
+
+  describe "ships must be longer then one ship part" do
+    @tag :skip
+    test "short ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:error, "ships must be longer then 1 part"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 1)
+    end
+  end
+
   describe "ship limit for players" do
+    @tag :skip
     test "add too many ships", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
       {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)

@@ -102,7 +102,7 @@ defmodule Ocean.Server do
     end
   end
 
-  defp valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships) do
+  defp valid_clear_water(_, from_lat, from_long, to_lat, to_long, ships) do
     case Enum.count(ships, fn ship -> 
       on_top_of(ship, from_lat, from_long, to_lat, to_long)
     end) do
@@ -140,8 +140,13 @@ defmodule Ocean.Server do
   # Overlapping
   # 4,4 -> 4,6
   # 4,6 -> 4,8
-  defp on_top_of(ship1, from_lat, from_long, to_lat, to_long) do
+  defp on_top_of({_, ship_from_lat, ship_from_long, ship_to_lat, ship_to_long}, from_lat, from_long, to_lat, to_long) do
     false
+    #cond do
+      #from_lat == to_lat   -> from_long in ship_from_long..ship_to_long
+      #from_long == to_long -> from_lat in ship_from_lat..ship_to_lat
+      #true                 -> true
+    #end
   end
 
 end
