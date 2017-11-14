@@ -141,13 +141,13 @@ defmodule Ocean.Server do
   # 4,4 -> 4,6
   # 4,6 -> 4,8
   defp on_top_of({_, ship_from_lat, ship_from_long, ship_to_lat, ship_to_long}, from_lat, from_long, to_lat, to_long) do
-    false
-    #cond do
-      #from_lat == to_lat   -> from_long in ship_from_long..ship_to_long
-      #from_long == to_long -> from_lat in ship_from_lat..ship_to_lat
-      #true                 -> true
-    #end
-  end
+    Collision.intersect(
+        {ship_from_lat, ship_from_long},
+        {ship_to_lat, ship_to_long},
+        {from_lat, from_long},
+        {to_lat, to_long}
+      )
 
+  end
 end
 
