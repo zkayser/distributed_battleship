@@ -36,14 +36,9 @@ defmodule Collision do
     end
   end
 
-  def on_line({line_point1_x, line_point1_y}, 
-                 {line_point2_x, line_point2_y},
-                 {point_x, point_y}) do
-    cond do
-      point_x in min(line_point1_x, line_point2_x)..max(line_point1_x, line_point2_x)  &&
-        point_y in min(line_point1_y, line_point2_y)..max(line_point1_y, line_point2_y) -> true
-      true                                                                              -> false
-    end
+  def on_line({line_point1_x, line_point1_y}, {line_point2_x, line_point2_y}, {point_x, point_y}) do
+    point_x in min(line_point1_x, line_point2_x)..max(line_point1_x, line_point2_x)  &&
+    point_y in min(line_point1_y, line_point2_y)..max(line_point1_y, line_point2_y)
   end
 
 end
