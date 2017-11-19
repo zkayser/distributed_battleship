@@ -60,7 +60,8 @@ defmodule Ocean.Server do
   end
 
   def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
-    {reply, state} = with {:ok} <- valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long),
+    {reply, state} = with {:ok} <- valid_ship_orientation(from_lat, from_long, to_lat, to_long),
+                          {:ok} <- valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long),
                           {:ok} <- valid_ship_long_enough(from_lat, from_long, to_lat, to_long),
                           {:ok} <- valid_number_ship_parts(max_ship_parts, player, from_lat, from_long, to_lat, to_long, ships),
                           {:ok} <- valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships)
@@ -83,6 +84,14 @@ defmodule Ocean.Server do
   def handle_call(command, _from_pid, state) do
     Logger.info("Invalid command #{inspect command} : #{inspect state}")
     {:noreply, state}
+  end
+
+  defp valid_ship_orientation(from_lat, from_long, to_lat, to_long) do
+    cond do
+      from_lat == to_lat   -> {:ok}
+      from_long == to_long -> {:ok}
+      true                 -> {:error, "ship must be horizontal or vertical"}
+    end
   end
 
   defp valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long) do

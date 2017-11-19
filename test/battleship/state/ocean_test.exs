@@ -84,17 +84,29 @@ defmodule OceanTest do
   end
 
   describe "no diagonal ships" do
-    @tag :skip
-    test "from top left to bottom right" do
+    test "from top left to bottom right", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:error, "ship must be horizontal or vertical"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 1, 1)
     end
-    @tag :skip
-    test "from bottom left to top right" do
+
+    test "from bottom left to top right", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:error, "ship must be horizontal or vertical"} = Ocean.add_ship(context.pid, "Fred", 1, 0, 0, 1)
     end
-    @tag :skip
-    test "from top right to bottom left" do
+
+    test "from top right to bottom left", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:error, "ship must be horizontal or vertical"} = Ocean.add_ship(context.pid, "Fred", 0, 1, 1, 0)
     end
-    @tag :skip
-    test "from bottom right to top left" do
+
+    test "from bottom right to top left", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:error, "ship must be horizontal or vertical"} = Ocean.add_ship(context.pid, "Fred", 1, 1, 0, 0)
+    end
+
+    test "some other angle", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:error, "ship must be horizontal or vertical"} = Ocean.add_ship(context.pid, "Fred", 5, 3, 2, 8)
     end
   end
 
