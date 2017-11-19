@@ -44,6 +44,8 @@ defmodule Ocean.Server do
 
   # There must be enough ships to blow up but not enough that it takes too long to place them or find them.
   @player_ocean_ship_ratio 20
+
+  # All ships must be at least 2 parts long.
   @min_ship_length         2
 
   def handle_call({:set_size, ocean_size}, _from_pid, state) do
@@ -61,7 +63,7 @@ defmodule Ocean.Server do
   def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size}) do
     {reply, state} = with {:ok} <- valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long),
                           {:ok} <- valid_ship_long_enough(from_lat, from_long, to_lat, to_long),
-                          {:ok} <- valid_number_ships(player, from_lat, from_long, to_lat, to_long, ships),
+                          {:ok} <- valid_number_ship_parts(player, from_lat, from_long, to_lat, to_long, ships),
                           {:ok} <- valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships)
     do
         {{:ok, "Added"}, Map.merge(state, %{ships: another_ship(ships, player, from_lat, from_long, to_lat, to_long)})}
@@ -99,15 +101,13 @@ defmodule Ocean.Server do
     end
   end
 
-  defp valid_number_ships(player, from_lat, from_long, to_lat, to_long, ships) do
-    count = 
-      ships
-      |> another_ship(player, from_lat, from_long, to_lat, to_long)
-      |> count_players_ships(player)
+  defp valid_number_ship_parts(player, from_lat, from_long, to_lat, to_long, ships) do
+    current_ship_parts = ships |> count_players_ships(player)
+    new_ship_parts     = ship_length(from_lat, from_long, to_lat, to_long)
 
-    cond do
-      count <= @player_ocean_ship_ratio -> {:ok}
-      count > @player_ocean_ship_ratio -> {:error, "ship limit exceeded: #{count} > #{@player_ocean_ship_ratio}"} 
+    case current_ship_parts + new_ship_parts <= @player_ocean_ship_ratio do
+     true  -> {:ok}
+     false -> {:error, "ship limit exceeded: you have #{current_ship_parts} and are adding #{new_ship_parts} ship parts. Max is #{@player_ocean_ship_ratio}"}
     end
   end
 
