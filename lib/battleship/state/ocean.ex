@@ -44,9 +44,6 @@ defmodule Ocean.Server do
   use GenServer
   require Logger
 
-  # There must be enough ships to blow up but not enough that it takes too long to place them or find them.
-  @player_ocean_ship_ratio 20
-
   # All ships must be at least 2 parts long.
   @min_ship_length         2
 
@@ -62,10 +59,10 @@ defmodule Ocean.Server do
     {:reply, {:ok, state.ships}, state} 
   end
 
-  def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size}) do
+  def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
     {reply, state} = with {:ok} <- valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long),
                           {:ok} <- valid_ship_long_enough(from_lat, from_long, to_lat, to_long),
-                          {:ok} <- valid_number_ship_parts(player, from_lat, from_long, to_lat, to_long, ships),
+                          {:ok} <- valid_number_ship_parts(max_ship_parts, player, from_lat, from_long, to_lat, to_long, ships),
                           {:ok} <- valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships)
     do
         {{:ok, "Added"}, Map.merge(state, %{ships: another_ship(ships, player, from_lat, from_long, to_lat, to_long)})}
@@ -103,13 +100,13 @@ defmodule Ocean.Server do
     end
   end
 
-  defp valid_number_ship_parts(player, from_lat, from_long, to_lat, to_long, ships) do
+  defp valid_number_ship_parts(max_ship_parts, player, from_lat, from_long, to_lat, to_long, ships) do
     current_ship_parts = ships |> count_players_ships(player)
     new_ship_parts     = ship_length(from_lat, from_long, to_lat, to_long)
 
-    case current_ship_parts + new_ship_parts <= @player_ocean_ship_ratio do
+    case current_ship_parts + new_ship_parts <= max_ship_parts do
      true  -> {:ok}
-     false -> {:error, "ship limit exceeded: you have #{current_ship_parts} and are adding #{new_ship_parts} ship parts. Max is #{@player_ocean_ship_ratio}"}
+     false -> {:error, "ship limit exceeded: you have #{current_ship_parts} and are adding #{new_ship_parts} ship parts. Max is #{max_ship_parts}"}
     end
   end
 

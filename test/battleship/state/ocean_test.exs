@@ -108,11 +108,11 @@ defmodule OceanTest do
   describe "ship limit for players" do
     test "add too many ships", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
-      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 8) # 9 parts
-      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 1, 0, 1, 8) # 9 parts
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 6) # 7 parts
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 1, 0, 1, 6) # 7 parts
 
-      {:error, "ship limit exceeded: you have 18 and are adding 3 ship parts. Max is 20"} =
-          Ocean.add_ship(context.pid, "Fred", 9, 0, 9, 2) # 3 parts
+      {:error, "ship limit exceeded: you have 14 and are adding 2 ship parts. Max is 15"} =
+          Ocean.add_ship(context.pid, "Fred", 9, 0, 9, 1) # 2 parts
     end
   end
 
