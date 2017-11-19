@@ -129,36 +129,62 @@ defmodule OceanTest do
   end
 
   describe "ships can not sit on other ships - horizontal to horizontal" do
-    @tag :skip
-    test "can not touch the bow of another ship", context do
+    test "can not sit right on top", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
-      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
-      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 9)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 5)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 5)
     end
 
-    @tag :skip
-    test "can not touch the stern of another ship" do
+    test "can not touch the bow of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 3, 0, 5)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 3)
+    end
+
+    test "can not touch the stern of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 0, 3, 0, 5)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 0, 5, 0, 6)
     end
   end
 
   describe "ships can not sit on other ships - vertical to vertical" do
-    @tag :skip
-    test "can not touch the bow of another ship" do
+    test "can not sit on top of each other", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 0, 5, 0)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 3, 0, 5, 0)
     end
-    @tag :skip
-    test "can not touch the stern of another ship" do
+
+    test "can not touch the bow of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 0, 5, 0)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 5, 0, 6, 0)
+    end
+
+    test "can not touch the stern of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 0, 5, 0)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 3, 0)
     end
   end
 
   describe "ships can not sit on other ships - horizontal to vertical" do
-    @tag :skip
-    test "ships can not cross in the middle" do
+    test "ships can not cross in the middle", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 5, 3)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 4, 2, 4, 4)
     end
-    @tag :skip
-    test "can not touch the bow of another ship" do
+
+    test "can not touch the bow of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 5, 3)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 3, 5)
     end
-    @tag :skip
-    test "can not touch the stern of another ship" do
+    
+    test "can not touch the stern of another ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 5, 3)
+      {:error, "there is another ship here"} = Ocean.add_ship(context.pid, "Fred", 5, 3, 5, 5)
     end
   end
 
