@@ -4,11 +4,11 @@ defmodule Mix.Tasks.Battleship.AddShip do
   @shortdoc "Adds a ship for a player"
 
   def run(name) when length(name) == 0 do
-    IO.puts "usage: add_ship <name> <from lat> <from long> <to lat> <to long>" 
+    IO.puts "usage: add_ship <name> <from x> <from y> <to x> <to y>" 
   end
-  def run([name, from_lat, from_long, to_lat, to_long]) do
+  def run([name, from_x, from_y, to_x, to_y]) do
     Battleship.Command.command(:ocean, fn pid ->
-      Ocean.add_ship(pid, name, from_lat, from_long, to_lat, to_long)
+      Ocean.add_ship(pid, name, from_x, from_y, to_x, to_y)
     end)
   end
 end

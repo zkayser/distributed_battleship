@@ -35,8 +35,8 @@ defmodule Ocean do
     GenServer.call(pid, {:ships})
   end
 
-  def add_ship(pid, player, from_lat, from_long, to_lat, to_long) do
-    GenServer.call(pid, {:add_ship, player, from_lat, from_long, to_lat, to_long})
+  def add_ship(pid, player, from_x, from_y, to_x, to_y) do
+    GenServer.call(pid, {:add_ship, player, from_x, from_y, to_x, to_y})
   end
 end
 
@@ -59,14 +59,14 @@ defmodule Ocean.Server do
     {:reply, {:ok, state.ships}, state} 
   end
 
-  def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
-    {reply, state} = with {:ok} <- valid_ship_orientation(from_lat, from_long, to_lat, to_long),
-                          {:ok} <- valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long),
-                          {:ok} <- valid_ship_long_enough(from_lat, from_long, to_lat, to_long),
-                          {:ok} <- valid_number_ship_parts(max_ship_parts, player, from_lat, from_long, to_lat, to_long, ships),
-                          {:ok} <- valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships)
+  def handle_call({:add_ship, player, from_x, from_y, to_x, to_y}, _from_pid, state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
+    {reply, state} = with {:ok} <- valid_ship_orientation(from_x, from_y, to_x, to_y),
+                          {:ok} <- valid_ship_on_ocean(ocean_size, from_x, from_y, to_x, to_y),
+                          {:ok} <- valid_ship_long_enough(from_x, from_y, to_x, to_y),
+                          {:ok} <- valid_number_ship_parts(max_ship_parts, player, from_x, from_y, to_x, to_y, ships),
+                          {:ok} <- valid_clear_water(player, from_x, from_y, to_x, to_y, ships)
     do
-        {{:ok, "Added"}, Map.merge(state, %{ships: another_ship(ships, player, from_lat, from_long, to_lat, to_long)})}
+        {{:ok, "Added"}, Map.merge(state, %{ships: another_ship(ships, player, from_x, from_y, to_x, to_y)})}
     else
       {:error, message} -> {{:error, message}, state }
     end
@@ -86,32 +86,32 @@ defmodule Ocean.Server do
     {:noreply, state}
   end
 
-  defp valid_ship_orientation(from_lat, from_long, to_lat, to_long) do
+  defp valid_ship_orientation(from_x, from_y, to_x, to_y) do
     cond do
-      from_lat == to_lat   -> {:ok}
-      from_long == to_long -> {:ok}
+      from_x == to_x   -> {:ok}
+      from_y == to_y -> {:ok}
       true                 -> {:error, "ship must be horizontal or vertical"}
     end
   end
 
-  defp valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long) do
-    case {from_lat >= 0         , from_long >= 0         , to_lat >= 0         , to_long >= 0,
-          from_lat < ocean_size , from_long < ocean_size , to_lat < ocean_size , to_long < ocean_size } do
+  defp valid_ship_on_ocean(ocean_size, from_x, from_y, to_x, to_y) do
+    case {from_x >= 0         , from_y >= 0         , to_x >= 0         , to_y >= 0,
+          from_x < ocean_size , from_y < ocean_size , to_x < ocean_size , to_y < ocean_size } do
       {true, true, true, true, true, true, true, true} -> {:ok}
       _                                                -> {:error, "off the ocean"}
     end
   end
 
-  defp valid_ship_long_enough(from_lat, from_long, to_lat, to_long) do
-    case ship_length(from_lat, from_long, to_lat, to_long) >= @min_ship_length do
+  defp valid_ship_long_enough(from_x, from_y, to_x, to_y) do
+    case ship_length(from_x, from_y, to_x, to_y) >= @min_ship_length do
       true  -> {:ok}
       false -> {:error, "ships must be longer then 1 part"}
     end
   end
 
-  defp valid_number_ship_parts(max_ship_parts, player, from_lat, from_long, to_lat, to_long, ships) do
+  defp valid_number_ship_parts(max_ship_parts, player, from_x, from_y, to_x, to_y, ships) do
     current_ship_parts = ships |> count_players_ships(player)
-    new_ship_parts     = ship_length(from_lat, from_long, to_lat, to_long)
+    new_ship_parts     = ship_length(from_x, from_y, to_x, to_y)
 
     case current_ship_parts + new_ship_parts <= max_ship_parts do
      true  -> {:ok}
@@ -119,9 +119,9 @@ defmodule Ocean.Server do
     end
   end
 
-  defp valid_clear_water(_, from_lat, from_long, to_lat, to_long, ships) do
+  defp valid_clear_water(_, from_x, from_y, to_x, to_y, ships) do
     case Enum.count(ships, fn ship -> 
-      on_top_of(ship, from_lat, from_long, to_lat, to_long)
+      on_top_of(ship, from_x, from_y, to_x, to_y)
     end) do
       0 -> {:ok}
       _ -> {:error, "there is another ship here"}
@@ -138,17 +138,17 @@ defmodule Ocean.Server do
     end)
   end
 
-  defp ship_length(_ship = {_, from_lat, from_long, to_lat, to_long}), do: ship_length(from_lat, from_long, to_lat, to_long)
-  defp ship_length(from_lat, from_long, to_lat, to_long) do
+  defp ship_length(_ship = {_, from_x, from_y, to_x, to_y}), do: ship_length(from_x, from_y, to_x, to_y)
+  defp ship_length(from_x, from_y, to_x, to_y) do
     cond do
-      from_lat == to_lat   -> abs(from_long - to_long) + 1
-      from_long == to_long -> abs(from_lat - to_lat) + 1
+      from_x == to_x   -> abs(from_y - to_y) + 1
+      from_y == to_y -> abs(from_x - to_x) + 1
       true                 -> 99
     end
   end
 
-  defp another_ship(ships, player, from_lat, from_long, to_lat, to_long) do
-    ships ++ [{player, from_lat, from_long, to_lat, to_long}]
+  defp another_ship(ships, player, from_x, from_y, to_x, to_y) do
+    ships ++ [{player, from_x, from_y, to_x, to_y}]
   end
 
   # Good
@@ -158,12 +158,12 @@ defmodule Ocean.Server do
   # Overlapping
   # 4,4 -> 4,6
   # 4,6 -> 4,8
-  defp on_top_of({_, ship_from_lat, ship_from_long, ship_to_lat, ship_to_long}, from_lat, from_long, to_lat, to_long) do
+  defp on_top_of({_, ship_from_x, ship_from_y, ship_to_x, ship_to_y}, from_x, from_y, to_x, to_y) do
     Collision.intersect(
-        {ship_from_lat, ship_from_long},
-        {ship_to_lat, ship_to_long},
-        {from_lat, from_long},
-        {to_lat, to_long}
+        {ship_from_x, ship_from_y},
+        {ship_to_x, ship_to_y},
+        {from_x, from_y},
+        {to_x, to_y}
       )
 
   end

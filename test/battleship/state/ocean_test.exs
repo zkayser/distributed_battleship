@@ -76,9 +76,9 @@ defmodule OceanTest do
         {-1,0,0,0},
       ]
 
-      Enum.each(data, fn {from_lat, from_long, to_lat, to_long} ->
-        result = Ocean.add_ship(context.pid, "Ahab", from_lat, from_long, to_lat, to_long)
-        assert {:error, "off the ocean"} == result, "Position shouldn't work: #{from_lat}x#{from_long}_#{to_lat}x#{to_long}"
+      Enum.each(data, fn {from_x, from_y, to_x, to_y} ->
+        result = Ocean.add_ship(context.pid, "Ahab", from_x, from_y, to_x, to_y)
+        assert {:error, "off the ocean"} == result, "Position shouldn't work: #{from_x}x#{from_y}_#{to_x}x#{to_y}"
       end)
     end
   end

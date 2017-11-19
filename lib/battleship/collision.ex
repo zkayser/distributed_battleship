@@ -1,9 +1,9 @@
 defmodule Collision do
   # http://www.geeksforgeeks.org/orientation-3-ordered-points/
-  # 0,0 is top left.
-  def orientation({point1_y, point1_x}, {point2_y, point2_x}, {point3_y, point3_x }) do
+  # originl 0,0 is bottom left.
+  def orientation({point1_x, point1_y}, {point2_x, point2_y}, {point3_x, point3_y }) do
 
-    value = (point2_y - point1_y) * (point3_x - point2_x) - (point2_x - point1_x) * (point3_y - point2_y)
+    value = (point2_x - point1_x) * (point3_y - point2_y) - (point2_y - point1_y) * (point3_x - point2_x)
     cond do
       value == 0 -> :colinear
       value < 0  -> :clockwise
@@ -37,8 +37,8 @@ defmodule Collision do
   end
 
   def on_line({line_point1_x, line_point1_y}, {line_point2_x, line_point2_y}, {point_x, point_y}) do
-    point_x in min(line_point1_x, line_point2_x)..max(line_point1_x, line_point2_x)  &&
-    point_y in min(line_point1_y, line_point2_y)..max(line_point1_y, line_point2_y)
+    point_y in min(line_point1_y, line_point2_y)..max(line_point1_y, line_point2_y)  &&
+    point_x in min(line_point1_x, line_point2_x)..max(line_point1_x, line_point2_x)
   end
 
 end
