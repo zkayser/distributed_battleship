@@ -44,7 +44,7 @@ defmodule OceanTest do
       assert response == "Added"
 
       {:ok, ships} = Ocean.ships(context.pid)
-      assert {"Ed", 0, 0, 0, 10} in ships
+      assert Ship.new("Ed", 0, 0, 0, 10) in ships
     end
 
     test "add more than one ship", context do
@@ -53,8 +53,8 @@ defmodule OceanTest do
       {:ok, "Added"} = Ocean.add_ship(context.pid, "Jim",  1, 0, 1, 4)
 
       {:ok, ships} = Ocean.ships(context.pid)
-      assert {"Fred", 0, 0, 0, 2} in ships
-      assert {"Jim", 1, 0, 1, 4} in ships
+      assert Ship.new("Fred", 0, 0, 0, 2) in ships
+      assert Ship.new("Jim", 1, 0, 1, 4)  in ships
     end
 
     @tag :skip

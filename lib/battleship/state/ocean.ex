@@ -36,7 +36,7 @@ defmodule Ocean do
   end
 
   def add_ship(pid, player, from_x, from_y, to_x, to_y) do
-    GenServer.call(pid, {:add_ship, player, from_x, from_y, to_x, to_y})
+    GenServer.call(pid, {:add_ship, Ship.new(player, from_x, from_y, to_x, to_y)})
   end
 end
 
@@ -59,21 +59,23 @@ defmodule Ocean.Server do
     {:reply, {:ok, state.ships}, state} 
   end
 
-  def handle_call({:add_ship, player, from_x, from_y, to_x, to_y}, _from_pid, state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
-    {reply, state} = with {:ok} <- valid_ship_orientation(from_x, from_y, to_x, to_y),
-                          {:ok} <- valid_ship_on_ocean(ocean_size, from_x, from_y, to_x, to_y),
-                          {:ok} <- valid_ship_long_enough(from_x, from_y, to_x, to_y),
-                          {:ok} <- valid_number_ship_parts(max_ship_parts, player, from_x, from_y, to_x, to_y, ships),
-                          {:ok} <- valid_clear_water(player, from_x, from_y, to_x, to_y, ships)
+  def handle_call({:add_ship, ship = %Ship{player: player}}, _from_pid, 
+                  state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
+
+    {reply, state} = with {:ok} <- valid_ship_orientation(ship),
+                          {:ok} <- valid_ship_on_ocean(ocean_size, ship),
+                          {:ok} <- valid_ship_long_enough(ship),
+                          {:ok} <- valid_number_ship_parts(max_ship_parts, player, ship, ships),
+                          {:ok} <- valid_clear_water(player, ship, ships)
     do
-        {{:ok, "Added"}, Map.merge(state, %{ships: another_ship(ships, player, from_x, from_y, to_x, to_y)})}
+      {{:ok, "Added"}, Map.merge(state, %{ships: ships ++ [ship]})}
     else
       {:error, message} -> {{:error, message}, state }
     end
 
     {:reply, reply, state}
   end
-  def handle_call({:add_ship, _, _, _, _, _}, _from_pid, state) do
+  def handle_call({:add_ship, _}, _from_pid, state) do
     {:reply, {:error, "how big the ocean blue"}, state}
   end
 
@@ -86,32 +88,32 @@ defmodule Ocean.Server do
     {:noreply, state}
   end
 
-  defp valid_ship_orientation(from_x, from_y, to_x, to_y) do
+  defp valid_ship_orientation(ship) do
     cond do
-      from_x == to_x   -> {:ok}
-      from_y == to_y -> {:ok}
-      true                 -> {:error, "ship must be horizontal or vertical"}
+      ship.from.x == ship.to.x -> {:ok}
+      ship.from.y == ship.to.y -> {:ok}
+      true                     -> {:error, "ship must be horizontal or vertical"}
     end
   end
 
-  defp valid_ship_on_ocean(ocean_size, from_x, from_y, to_x, to_y) do
-    case {from_x >= 0         , from_y >= 0         , to_x >= 0         , to_y >= 0,
-          from_x < ocean_size , from_y < ocean_size , to_x < ocean_size , to_y < ocean_size } do
+  defp valid_ship_on_ocean(ocean_size, ship) do
+    case {ship.from.x >= 0         , ship.from.y >= 0         , ship.to.x >= 0         , ship.to.y >= 0,
+          ship.from.x < ocean_size , ship.from.y < ocean_size , ship.to.x < ocean_size , ship.to.y < ocean_size } do
       {true, true, true, true, true, true, true, true} -> {:ok}
       _                                                -> {:error, "off the ocean"}
     end
   end
 
-  defp valid_ship_long_enough(from_x, from_y, to_x, to_y) do
-    case ship_length(from_x, from_y, to_x, to_y) >= @min_ship_length do
+  defp valid_ship_long_enough(ship) do
+    case ship_length(ship) >= @min_ship_length do
       true  -> {:ok}
       false -> {:error, "ships must be longer then 1 part"}
     end
   end
 
-  defp valid_number_ship_parts(max_ship_parts, player, from_x, from_y, to_x, to_y, ships) do
-    current_ship_parts = ships |> count_players_ships(player)
-    new_ship_parts     = ship_length(from_x, from_y, to_x, to_y)
+  defp valid_number_ship_parts(max_ship_parts, player, ship, ships) do
+    current_ship_parts = count_players_ships(ships, player)
+    new_ship_parts     = ship_length(ship)
 
     case current_ship_parts + new_ship_parts <= max_ship_parts do
      true  -> {:ok}
@@ -119,10 +121,8 @@ defmodule Ocean.Server do
     end
   end
 
-  defp valid_clear_water(_, from_x, from_y, to_x, to_y, ships) do
-    case Enum.count(ships, fn ship -> 
-      on_top_of(ship, from_x, from_y, to_x, to_y)
-    end) do
+  defp valid_clear_water(_, this_ship, ships) do
+    case Enum.count(ships, fn ship -> on_top_of(this_ship, ship) end) do
       0 -> {:ok}
       _ -> {:error, "there is another ship here"}
     end
@@ -132,23 +132,18 @@ defmodule Ocean.Server do
   defp count_players_ships(ships, player) do
     Enum.reduce(ships, 0, fn ship, count -> 
       case ship do
-        {^player, _, _, _, _} -> count + ship_length(ship)
-        _                     -> count
+        %Ship{player: ^player} -> count + ship_length(ship)
+        _                      -> count
       end
     end)
   end
 
-  defp ship_length(_ship = {_, from_x, from_y, to_x, to_y}), do: ship_length(from_x, from_y, to_x, to_y)
-  defp ship_length(from_x, from_y, to_x, to_y) do
+  defp ship_length(ship) do
     cond do
-      from_x == to_x   -> abs(from_y - to_y) + 1
-      from_y == to_y -> abs(from_x - to_x) + 1
-      true                 -> 99
+      ship.from.x == ship.to.x -> abs(ship.from.y - ship.to.y) + 1
+      ship.from.y == ship.to.y -> abs(ship.from.x - ship.to.x) + 1
+      true                     -> 99
     end
-  end
-
-  defp another_ship(ships, player, from_x, from_y, to_x, to_y) do
-    ships ++ [{player, from_x, from_y, to_x, to_y}]
   end
 
   # Good
@@ -158,14 +153,13 @@ defmodule Ocean.Server do
   # Overlapping
   # 4,4 -> 4,6
   # 4,6 -> 4,8
-  defp on_top_of({_, ship_from_x, ship_from_y, ship_to_x, ship_to_y}, from_x, from_y, to_x, to_y) do
+  defp on_top_of(this_ship, that_ship) do
     Collision.intersect(
-        {ship_from_x, ship_from_y},
-        {ship_to_x, ship_to_y},
-        {from_x, from_y},
-        {to_x, to_y}
+        {this_ship.from.x, this_ship.from.y},
+        {this_ship.to.x,   this_ship.to.y},
+        {that_ship.from.x, that_ship.from.y},
+        {that_ship.to.x,   that_ship.to.y}
       )
-
   end
 end
 
