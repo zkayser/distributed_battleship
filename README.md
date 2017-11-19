@@ -38,8 +38,9 @@ First get over all the firewall issues with are bound to hurt. The game uses erl
 
 The rules for normal 2 player battleships work well but some changes are needed to scale to more people.
 
-* If you strike an opponents ship who should know about it. You should of coarse but if all players also know this then you can organize into attack groups which if better.
-* If you miss should your opponents know. Every guess improves the next players guess, unless there are no turns, just a free flow of bombs launched at random. Then seeing your opponents misses will slow you down, and make the game better.
+* If you strike an opponents ship who should know about it? You should, of coarse, but if all players also know it then you can organize into attack groups which if better.
+* If you miss should your opponents know? Every guess improves the next players guess, unless there are no turns, just a free flow of bombs launched at random. Then seeing your opponents misses will slow you down, and make the game better.
+* When you add ships to a shared ocean, there may already be a ship there. This gives players another way to learn where opponents ships are. Is this fare? Of coarse it is. Track collusions and plan your bombing runs.
 
 ## Running
 
