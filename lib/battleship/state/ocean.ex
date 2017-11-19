@@ -44,6 +44,7 @@ defmodule Ocean.Server do
 
   # There must be enough ships to blow up but not enough that it takes too long to place them or find them.
   @player_ocean_ship_ratio 20
+  @min_ship_length         2
 
   def handle_call({:set_size, ocean_size}, _from_pid, state) do
     {:reply, {:ok, ocean_size}, Map.merge(state, %{ocean_size: ocean_size})} 
@@ -58,7 +59,8 @@ defmodule Ocean.Server do
   end
 
   def handle_call({:add_ship, player, from_lat, from_long, to_lat, to_long}, _from_pid, state = %{ships: ships, ocean_size: ocean_size}) do
-    {reply, state} = with {:ok} <- valid_ship(ocean_size, from_lat, from_long, to_lat, to_long),
+    {reply, state} = with {:ok} <- valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long),
+                          {:ok} <- valid_ship_long_enough(from_lat, from_long, to_lat, to_long),
                           {:ok} <- valid_number_ships(player, from_lat, from_long, to_lat, to_long, ships),
                           {:ok} <- valid_clear_water(player, from_lat, from_long, to_lat, to_long, ships)
     do
@@ -82,11 +84,18 @@ defmodule Ocean.Server do
     {:noreply, state}
   end
 
-  defp valid_ship(ocean_size, from_lat, from_long, to_lat, to_long) do
+  defp valid_ship_on_ocean(ocean_size, from_lat, from_long, to_lat, to_long) do
     case {from_lat >= 0         , from_long >= 0         , to_lat >= 0         , to_long >= 0,
           from_lat < ocean_size , from_long < ocean_size , to_lat < ocean_size , to_long < ocean_size } do
       {true, true, true, true, true, true, true, true} -> {:ok}
       _                                                -> {:error, "off the ocean"}
+    end
+  end
+
+  defp valid_ship_long_enough(from_lat, from_long, to_lat, to_long) do
+    case ship_length(from_lat, from_long, to_lat, to_long) >= @min_ship_length do
+      true  -> {:ok}
+      false -> {:error, "ships must be longer then 1 part"}
     end
   end
 
@@ -115,13 +124,14 @@ defmodule Ocean.Server do
   defp count_players_ships(ships, player) do
     Enum.reduce(ships, 0, fn ship, count -> 
       case ship do
-        {^player, _, _, _, _} -> count + ship_size(ship)
+        {^player, _, _, _, _} -> count + ship_length(ship)
         _                     -> count
       end
     end)
   end
 
-  defp ship_size({_, from_lat, from_long, to_lat, to_long}) do
+  defp ship_length(_ship = {_, from_lat, from_long, to_lat, to_long}), do: ship_length(from_lat, from_long, to_lat, to_long)
+  defp ship_length(from_lat, from_long, to_lat, to_long) do
     cond do
       from_lat == to_lat   -> abs(from_long - to_long) + 1
       from_long == to_long -> abs(from_lat - to_lat) + 1

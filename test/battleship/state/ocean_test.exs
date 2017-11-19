@@ -95,10 +95,9 @@ defmodule OceanTest do
   end
 
   describe "ships must be longer then one ship part" do
-    @tag :skip
     test "short ship", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
-      {:error, "ships must be longer then 1 part"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 1)
+      {:error, "ships must be longer then 1 part"} = Ocean.add_ship(context.pid, "Fred", 0, 0, 0, 0)
     end
   end
 
