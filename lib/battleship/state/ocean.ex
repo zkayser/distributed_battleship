@@ -2,7 +2,8 @@ defmodule Ocean do
   require Logger
 
   # Every player needs an area to work in or ships will be too close together.
-  @player_ocean_ratio 10
+  @player_ocean_ratio      10
+  @player_ocean_ship_ratio 0.75
 
   def start() do
     {:ok, pid} = GenServer.start_link(Ocean.Server, %{ships: []}, name: {:global, :ocean})
@@ -22,8 +23,9 @@ defmodule Ocean do
   # Ocean size is a function of the number of players 
   def size(pid, registered_players) do
     ocean_size = Enum.count(Map.keys(registered_players)) * @player_ocean_ratio
+    max_ship_parts = round(ocean_size * @player_ocean_ship_ratio )
 
-    GenServer.call(pid, {:set_size, ocean_size})
+    GenServer.call(pid, {:set_size, ocean_size, max_ship_parts})
   end
   def size(pid) do
     GenServer.call(pid, {:get_size})
@@ -48,12 +50,12 @@ defmodule Ocean.Server do
   # All ships must be at least 2 parts long.
   @min_ship_length         2
 
-  def handle_call({:set_size, ocean_size}, _from_pid, state) do
-    {:reply, {:ok, ocean_size}, Map.merge(state, %{ocean_size: ocean_size})} 
+  def handle_call({:set_size, ocean_size, max_ship_parts}, _from_pid, state) do
+    {:reply, {:ok, ocean_size, max_ship_parts}, Map.merge(state, %{ocean_size: ocean_size, max_ship_parts: max_ship_parts})} 
   end
 
   def handle_call({:get_size}, _from_pid, state) do
-    {:reply, {:ok, state.ocean_size}, state} 
+    {:reply, {:ok, state.ocean_size, state.max_ship_parts}, state} 
   end
 
   def handle_call({:ships}, _from_pid, state) do

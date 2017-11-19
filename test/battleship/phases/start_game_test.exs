@@ -39,7 +39,7 @@ defmodule StartGameTest do
     %{service: %{players_pid: context.players_pid, ocean_pid: context.ocean_pid}}
     |> StartGame.tick()
 
-    assert_receive {"congratulations", 10, 20}
+    assert_receive {"congratulations", 10, 8}
   end
 
   test "sends messages to multiple player nodes", context do
@@ -49,8 +49,8 @@ defmodule StartGameTest do
     %{service: %{players_pid: context.players_pid, ocean_pid: context.ocean_pid}}
     |> StartGame.tick()
 
-    assert_receive {"congratulations", 20, 20}
-    assert_receive {"congratulations", 20, 20}
+    assert_receive {"congratulations", 20, 15}
+    assert_receive {"congratulations", 20, 15}
   end
 end
 

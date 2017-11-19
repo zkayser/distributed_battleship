@@ -1,8 +1,6 @@
 defmodule StartGame do
   @moduledoc "Players are told its time to start with the ocean size, and the number of ship compoents they can use."
 
-  @number_of_ships 20
-
   def tick(phase_context = %{service: %{players_pid: players_pid, ocean_pid: ocean_pid}}) do
     {:ok, registered_players} = Players.registered_players(players_pid)
 
@@ -12,10 +10,10 @@ defmodule StartGame do
   end
 
   defp notify_players(ocean_pid, registered_players) do
-    {:ok, ocean_size} = Ocean.size(ocean_pid, registered_players)
+    {:ok, ocean_size, max_ship_parts} = Ocean.size(ocean_pid, registered_players)
 
     for players_pid <- Map.values(registered_players) do
-      send players_pid, {"congratulations", ocean_size, @number_of_ships}
+      send players_pid, {"congratulations", ocean_size, max_ship_parts}
     end
 
     ocean_size

@@ -16,15 +16,19 @@ defmodule OceanTest do
     end
   end
 
-  describe "ocean size" do
+  describe "ocean size and max ships" do
+    test "set ocean size to a rounded integer", context do
+      assert {:ok, 10, 8} == Ocean.size(context.pid, %{"player1" => true})
+    end
+
     test "set ocean size", context do
-      assert {:ok, 20} == Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      assert {:ok, 20, 15} == Ocean.size(context.pid, %{"player1" => true, "player2" => true})
     end
 
     test "set and retrieve the size", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
-      assert {:ok, 20} == Ocean.size(context.pid)
+      assert {:ok, 20, 15} == Ocean.size(context.pid)
     end
 
     test "we dont know the ocean size yet", context do
@@ -59,7 +63,7 @@ defmodule OceanTest do
     end
 
     test "ship can not be off the ocean", context do
-      {:ok, ocean_size} = Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, ocean_size, _} = Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
       data = [
         {0,0,0,ocean_size},
