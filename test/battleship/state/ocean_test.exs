@@ -57,11 +57,6 @@ defmodule OceanTest do
       assert Ship.new("Jim", 1, 0, 1, 4)  in ships
     end
 
-    @tag :skip
-    test "must only create horizontal or vertical ships" do
-
-    end
-
     test "ship can not be off the ocean", context do
       {:ok, ocean_size, _} = Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
