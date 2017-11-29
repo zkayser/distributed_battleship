@@ -11,6 +11,13 @@ defmodule Organize do
     |> logger()
   end
 
+  def track_phase(context = %{track_phase: track_phase}, phase) do
+    %{context | track_phase: track_phase ++ [phase]}
+  end
+  def track_phase(context, phase) do
+    Map.merge(context, %{track_phase: [phase]})
+  end
+
   defp for_phase(context, phase) do
     context
       |> Map.merge(%{phase: phase})
@@ -30,6 +37,11 @@ defmodule Organize do
     context
   end
 
+  defp pause(nil), do: :ok
+  defp pause(tick_rate_ms) do
+    :timer.sleep(tick_rate_ms)
+  end
+
   defp logger(context = %{old_phase: old_phase, phase: new_phase}) do
     Logger.debug("#{__MODULE__}: PHASE #{old_phase} => #{new_phase} : #{inspect Map.delete(context, :track_phase)}")
     context
@@ -41,18 +53,6 @@ defmodule Organize do
   defp logger(context) do
     Logger.debug("#{__MODULE__}: PHASE _____ => _____ : #{inspect Map.delete(context, :track_phase)}")
     context
-  end
-
-  defp pause(nil), do: :ok
-  defp pause(tick_rate_ms) do
-    :timer.sleep(tick_rate_ms)
-  end
-
-  def track_phase(context = %{track_phase: track_phase}, phase) do
-    %{context | track_phase: track_phase ++ [phase]}
-  end
-  def track_phase(context, phase) do
-    Map.merge(context, %{track_phase: [phase]})
   end
 end
 
