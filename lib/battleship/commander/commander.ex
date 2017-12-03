@@ -41,7 +41,8 @@ defmodule Commander do
       |> Map.merge(%{service: 
         %{
           players_pid: Players.start(),
-          ocean_pid:   Ocean.start()
+          ocean_pid:   Ocean.start(),
+          trigger_pid: Trigger.start()
         }
       })
 

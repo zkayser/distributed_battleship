@@ -18,10 +18,10 @@ defmodule Battleship.Command do
   end
 
   defp lookup_service(_, :ignored) do
-    {:error, "Battleships is not running"}
+    {:error, "Battleships is not running: ignored"}
   end
   defp lookup_service(_, false) do
-    {:error, "Battleships is not running"}
+    {:error, "Battleships is not running: false"}
   end
   defp lookup_service(service, true) do
     :timer.sleep(1000)

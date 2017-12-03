@@ -3,15 +3,19 @@ defmodule WaitingForPlayersTest do
 
   setup() do
     players_pid = Players.start()
+    trigger_pid = Trigger.start()
 
-    on_exit(fn -> Players.stop() end)
+    on_exit(fn -> 
+      Players.stop()
+      Trigger.stop()
+    end)
 
-    [players_pid: players_pid]
+    [players_pid: players_pid, trigger_pid: trigger_pid]
   end
 
   test "initialize the players tracking data", context do
     phase_context = 
-      %{service: %{players_pid: context.players_pid}}
+      %{service: %{players_pid: context.players_pid, trigger_pid: context.trigger_pid}}
       |> WaitingForPlayers.tick()
 
     assert phase_context.player_count == 0
@@ -19,7 +23,7 @@ defmodule WaitingForPlayersTest do
 
   test "get players count after a number of ticks", context do
     phase_context = 
-      %{service: %{players_pid: context.players_pid}}
+      %{service: %{players_pid: context.players_pid, trigger_pid: context.trigger_pid}}
       |> WaitingForPlayers.tick()
       |> WaitingForPlayers.tick()
       |> WaitingForPlayers.tick()
@@ -29,8 +33,10 @@ defmodule WaitingForPlayersTest do
   end
 
   test "when ticks hits 60s stop waiting for players", context do
+    Trigger.pull(context.trigger_pid)
+
     phase_context = 
-      %{wait_max: 0, service: %{players_pid: context.players_pid}}
+      %{service: %{players_pid: context.players_pid, trigger_pid: context.trigger_pid}}
       |> WaitingForPlayers.tick()
       |> WaitingForPlayers.tick()
 

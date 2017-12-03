@@ -32,5 +32,16 @@ defmodule Phase do
   def update_context(phase_context, context) do
     Map.merge(context, %{context.phase => phase_context, old_phase: context.phase})
   end
+
+  # Indicate that a phase change is required.
+  def change(trigger_pid) do
+    Trigger.pull(trigger_pid)
+  end
+  def change?(trigger_pid, state, change_func) do
+    case Trigger.pulled?(trigger_pid) do
+      true  -> change_func.(state)
+      false -> state
+    end
+  end
 end
 
