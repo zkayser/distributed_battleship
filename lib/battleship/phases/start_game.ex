@@ -6,7 +6,9 @@ defmodule StartGame do
 
     ocean_size = notify_players(ocean_pid, registered_players)
 
-    Map.merge(phase_context, %{registered_players: registered_players, new_phase: :adding_ships, ocean_size: ocean_size})
+    phase_context
+    |> Phase.change(:adding_ships)
+    |> Map.merge(%{registered_players: registered_players, ocean_size: ocean_size})
   end
 
   defp notify_players(ocean_pid, registered_players) do

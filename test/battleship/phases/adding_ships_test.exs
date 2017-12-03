@@ -13,7 +13,7 @@ defmodule AddingShipsTest do
       |> AddingShips.tick()
       |> AddingShips.tick()
 
-    assert phase_context.new_phase == :adding_ships
+    refute Map.has_key?(phase_context, :new_phase)
   end
 
   test "force a timeout and switch to new phase" do
