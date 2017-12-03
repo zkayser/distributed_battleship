@@ -24,5 +24,14 @@ defmodule PhaseTest do
       assert state.new_phase == :new_phase
     end
   end
+
+  describe "change without trigger" do
+    test "make local change to context" do
+      state = Phase.change(%{}, :new_phase)
+
+      assert state.new_phase == :new_phase
+    end
+    
+  end
 end
 

@@ -34,14 +34,17 @@ defmodule Phase do
   end
 
   # Indicate that a phase change is required.
-  def change(trigger_pid) do
-    Trigger.pull(trigger_pid)
-  end
-  def change?(trigger_pid, phase_context, new_state) do
+  def change?(trigger_pid, phase_context, new_phase) do
     case Trigger.pulled?(trigger_pid) do
-      true  -> Map.merge(phase_context, %{new_phase: new_state})
+      true  -> change(phase_context, new_phase)
       false -> phase_context
     end
+  end
+  def change(phase_context, new_phase) do
+    Map.merge(phase_context, %{new_phase: new_phase})
+  end
+  def change(trigger_pid) do
+    Trigger.pull(trigger_pid)
   end
 end
 
