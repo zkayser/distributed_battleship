@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Battleship.AddShip do
   end
   def run([name, from_x, from_y, to_x, to_y]) do
     Battleship.Command.command(:ocean, fn pid ->
-      Ocean.add_ship(pid, name, from_x, from_y, to_x, to_y)
+      {:ok, Ocean.add_ship(pid, name, from_x, from_y, to_x, to_y) }
     end)
   end
 end

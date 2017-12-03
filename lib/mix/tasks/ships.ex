@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Battleship.Ships do
 
   def run(_) do
     Battleship.Command.command(:ocean, fn pid ->
-      Ocean.ships(pid)
+      {:ok, Ocean.ships(pid) }
     end)
   end
 end

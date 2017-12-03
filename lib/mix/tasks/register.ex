@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Battleship.Register do
   end
   def run(name) do
     Battleship.Command.command(:players, fn pid ->
-      Players.register(pid, name)
+      {:ok, Players.register(pid, name) }
     end)
   end
 end
