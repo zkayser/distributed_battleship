@@ -15,9 +15,7 @@ defmodule WaitingForPlayers do
       registered_players: registered_players
     })
 
-    Phase.change?(trigger_pid, phase_context, fn phase_context ->
-      Map.merge(phase_context, %{new_phase: :start_game})
-    end)
+    Phase.change?(trigger_pid, phase_context, :start_game)
   end
 
   def tick(phase_context) do

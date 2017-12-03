@@ -11,21 +11,17 @@ defmodule PhaseTest do
 
   describe "does the phase change" do
     test "no change in phase", context do
-      state = Phase.change?(context.pid, %{changed: false}, fn state -> 
-        Map.merge(state, %{changed: true})
-      end)
+      state = Phase.change?(context.pid, %{}, :new_phase)
 
-      refute state.changed
+      refute state[:new_phase] == :new_phase
     end
 
-    test " change in phase", context do
+    test "change in phase", context do
       Phase.change(context.pid)
 
-      state = Phase.change?(context.pid, %{}, fn state -> 
-        Map.merge(state, %{changed: true})
-      end)
+      state = Phase.change?(context.pid, %{}, :new_phase)
 
-      assert state.changed
+      assert state.new_phase == :new_phase
     end
   end
 end

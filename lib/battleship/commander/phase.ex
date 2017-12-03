@@ -37,10 +37,10 @@ defmodule Phase do
   def change(trigger_pid) do
     Trigger.pull(trigger_pid)
   end
-  def change?(trigger_pid, state, change_func) do
+  def change?(trigger_pid, phase_context, new_state) do
     case Trigger.pulled?(trigger_pid) do
-      true  -> change_func.(state)
-      false -> state
+      true  -> Map.merge(phase_context, %{new_phase: new_state})
+      false -> phase_context
     end
   end
 end
