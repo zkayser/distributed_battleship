@@ -59,6 +59,10 @@ defmodule Ocean.Server do
     {:reply, {:ok, state.ships}, state} 
   end
 
+  def handle_call(command = {:add_ship, ship = %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}}, from_pid, 
+                  state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
+    handle_call({:add_ship, Ship.new(player, from_x, from_y, to_x, to_y)}, from_pid, state)
+  end
   def handle_call({:add_ship, ship = %Ship{player: player}}, _from_pid, 
                   state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
 
@@ -75,8 +79,8 @@ defmodule Ocean.Server do
 
     {:reply, reply, state}
   end
-  def handle_call({:add_ship, _}, _from_pid, state) do
-    {:reply, {:error, "how big the ocean blue"}, state}
+  def handle_call(add = {:add_ship, _}, _from_pid, state) do
+    {:reply, {:error, "how big the ocean blue: add: #{inspect add}, state: #{inspect state}"}, state}
   end
 
   def handle_call({:stop}, _from_pid, state) do

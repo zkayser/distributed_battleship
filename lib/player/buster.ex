@@ -1,9 +1,9 @@
 defmodule Buster do
   def start() do
     with true <- connect(),
-        {:ok, message} <- register(),
+        {:ok, _essage} <- register(),
         {:ok, ocean_size} <- wait_for_congratulations(),
-        {:ok, added} <- add_ship(ocean_size)
+        {:ok, _dded} <- add_ship(ocean_size)
     do
       IO.puts(">>>> FINISHED")
     else
@@ -45,7 +45,7 @@ defmodule Buster do
 
   end
 
-  defp add_ship(ocean_size) do
+  defp add_ship(_cean_size) do
     IO.gets("Add a ship?")
 
     ocean_pid = :global.whereis_name(:ocean)

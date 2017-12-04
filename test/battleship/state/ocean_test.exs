@@ -37,7 +37,7 @@ defmodule OceanTest do
   end
 
   describe "ships" do
-    test "add a ship", context do
+    test "add a ship using internal struct", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
       {:ok, response} = Ocean.add_ship(context.pid, "Ed", 0, 0, 0, 10)
 
@@ -45,6 +45,15 @@ defmodule OceanTest do
 
       {:ok, ships} = Ocean.ships(context.pid)
       assert Ship.new("Ed", 0, 0, 0, 10) in ships
+    end
+
+    test "add a ship with raw message", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      Ocean.add_ship(context.pid, "Ed", 0, 0, 0, 10)
+
+      response = GenServer.call(context.pid, {:add_ship, %{ player: "Buster", from: %{ from_x: 1, from_y: 10 }, to: %{ to_x: 10, to_y: 10 } } })
+
+      assert response == {:ok, "Added"}
     end
 
     test "add more than one ship", context do

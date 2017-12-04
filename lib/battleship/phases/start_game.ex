@@ -15,6 +15,7 @@ defmodule StartGame do
     {:ok, ocean_size, max_ship_parts} = Ocean.size(ocean_pid, registered_players)
 
     for players_pid <- Map.values(registered_players) do
+      IO.puts("Congratulrations #{inspect players_pid}, ocean size: #{ocean_size}, #{max_ship_parts}")
       send players_pid, {"congratulations", ocean_size, max_ship_parts}
     end
 
