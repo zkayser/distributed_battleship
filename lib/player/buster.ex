@@ -53,11 +53,11 @@ defmodule Buster do
           player: "Buster",
           from: %{
             from_x: 1,
-            from_y: 10
+            from_y: 2
           },
           to: %{
-            to_x: 10,
-            to_y: 10
+            to_x: 3,
+            to_y: 2
           }
         }
       }

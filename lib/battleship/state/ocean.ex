@@ -79,7 +79,7 @@ defmodule Ocean.Server do
 
     {:reply, reply, state}
   end
-  def handle_call(add = {:add_ship, _}, _from_pid, state) do
+  def handle_call({:add_ship, _}, _from_pid, state) do
     {:reply, {:error, "how big the ocean blue"}, state}
   end
 
