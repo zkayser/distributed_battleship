@@ -59,8 +59,8 @@ defmodule Ocean.Server do
     {:reply, {:ok, state.ships}, state} 
   end
 
-  def handle_call(command = {:add_ship, ship = %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}}, from_pid, 
-                  state = %{ships: ships, ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
+  def handle_call({:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}}, from_pid, 
+                  state = %{ships: _hips, ocean_size: _cean_size, max_ship_parts: _ax_ship_parts}) do
     handle_call({:add_ship, Ship.new(player, from_x, from_y, to_x, to_y)}, from_pid, state)
   end
   def handle_call({:add_ship, ship = %Ship{player: player}}, _from_pid, 
@@ -80,7 +80,7 @@ defmodule Ocean.Server do
     {:reply, reply, state}
   end
   def handle_call(add = {:add_ship, _}, _from_pid, state) do
-    {:reply, {:error, "how big the ocean blue: add: #{inspect add}, state: #{inspect state}"}, state}
+    {:reply, {:error, "how big the ocean blue"}, state}
   end
 
   def handle_call({:stop}, _from_pid, state) do
@@ -104,7 +104,7 @@ defmodule Ocean.Server do
     case {ship.from.x >= 0         , ship.from.y >= 0         , ship.to.x >= 0         , ship.to.y >= 0,
           ship.from.x < ocean_size , ship.from.y < ocean_size , ship.to.x < ocean_size , ship.to.y < ocean_size } do
       {true, true, true, true, true, true, true, true} -> {:ok}
-      _                                                -> {:error, "off the ocean"}
+      _                                                -> {:error, "off the ocean: should be within 0x0 and #{ocean_size}x#{ocean_size}"}
     end
   end
 
