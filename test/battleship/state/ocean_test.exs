@@ -82,7 +82,7 @@ defmodule OceanTest do
 
       Enum.each(data, fn {from_x, from_y, to_x, to_y} ->
         result = Ocean.add_ship(context.pid, "Ahab", from_x, from_y, to_x, to_y)
-        assert {:error, "off the ocean: should be within 0x0 and #{ocean_size}x#{ocean_size}"} == result
+        assert {:error, "off the ocean: should be within 0x0 and #{ocean_size - 1}x#{ocean_size - 1}"} == result
       end)
     end
   end

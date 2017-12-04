@@ -104,7 +104,7 @@ defmodule Ocean.Server do
     case {ship.from.x >= 0         , ship.from.y >= 0         , ship.to.x >= 0         , ship.to.y >= 0,
           ship.from.x < ocean_size , ship.from.y < ocean_size , ship.to.x < ocean_size , ship.to.y < ocean_size } do
       {true, true, true, true, true, true, true, true} -> {:ok}
-      _                                                -> {:error, "off the ocean: should be within 0x0 and #{ocean_size}x#{ocean_size}"}
+      _                                                -> {:error, "off the ocean: should be within 0x0 and #{ocean_size - 1}x#{ocean_size - 1}"}
     end
   end
 
