@@ -5,10 +5,28 @@ defmodule TakingTurns do
 
   require Logger
   
+  def tick(phase_context = %{turn_count: turn_count, service: %{ocean_pid: ocean_pid, turns_pid: turns_pid}}) do
+    turns = Turns.get(turns_pid)
+
+    turn_results = process([], ocean_pid, turns)
+    phase_context = Map.merge(phase_context, %{turn_results: turn_results})
+
+    Map.merge(phase_context, %{turn_count: turn_count + length(turns)})
+  end
+
   def tick(phase_context) do
+    Map.merge(phase_context, %{turn_count: 0})
+  end
 
-    Logger.info "Turn #{inspect phase_context}"
+  defp process(turn_results, _cean_pid, []), do: turn_results
+  defp process(turn_results, ocean_pid, [turn | turns]) do
+    process(turn_results ++ [evaulate(ocean_pid, turn)], ocean_pid, turns)
+  end
 
-    phase_context
+  defp evaulate(ocean_pid, {player, position}) do
+    case Ocean.hit?(ocean_pid, position) do
+      true  -> {player, position, :hit}
+      false -> {player, position, :miss}
+    end
   end
 end

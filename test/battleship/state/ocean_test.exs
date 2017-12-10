@@ -192,5 +192,49 @@ defmodule OceanTest do
     end
   end
 
+  describe "combat" do
+    test "can a bomb hit a ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 5, 3)
+
+      assert true == Ocean.hit?(context.pid, %{x: 3, y: 3})
+    end
+
+    test "can a bomb miss a ship", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 5, 3)
+
+      assert true == Ocean.hit?(context.pid, %{x: 3, y: 3})
+    end
+
+    test "can a bomb hit one of many ships", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 3, 3, 5, 3)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 6, 5, 6, 8)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "Fred", 2, 7, 5, 7)
+
+      assert true == Ocean.hit?(context.pid, %{x: 4, y: 3})
+      assert true == Ocean.hit?(context.pid, %{x: 5, y: 3})
+
+      assert true == Ocean.hit?(context.pid, %{x: 6, y: 5})
+      assert true == Ocean.hit?(context.pid, %{x: 6, y: 6})
+      assert true == Ocean.hit?(context.pid, %{x: 6, y: 7})
+      assert true == Ocean.hit?(context.pid, %{x: 6, y: 8})
+
+      assert true == Ocean.hit?(context.pid, %{x: 2, y: 7})
+      assert true == Ocean.hit?(context.pid, %{x: 3, y: 7})
+      assert true == Ocean.hit?(context.pid, %{x: 4, y: 7})
+      assert true == Ocean.hit?(context.pid, %{x: 4, y: 7})
+
+      # Lets miss a few in the same ocean
+      assert false == Ocean.hit?(context.pid, %{x: 2, y: 8})
+      assert false == Ocean.hit?(context.pid, %{x: 2, y: 6})
+      assert false == Ocean.hit?(context.pid, %{x: 3, y: 8})
+      assert false == Ocean.hit?(context.pid, %{x: 3, y: 6})
+      assert false == Ocean.hit?(context.pid, %{x: 4, y: 8})
+      assert false == Ocean.hit?(context.pid, %{x: 4, y: 6})
+    end
+  end
+
 end
 

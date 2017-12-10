@@ -38,8 +38,22 @@ defmodule Ocean do
   def add_ship(pid, player, from_x, from_y, to_x, to_y) do
     GenServer.call(pid, {:add_ship, Ship.new(player, from_x, from_y, to_x, to_y)})
   end
+
+  def hit?(pid, position) do
+    case GenServer.call(pid, {:hit?, position}) do
+      {:ok, :hit}  -> true
+      {:ok, :miss} -> false
+    end
+  end
 end
 
+#
+# State
+# - player
+# - ships
+# - ocean_size
+# - max_ship_parts
+#
 defmodule Ocean.Server do
   use GenServer
   require Logger
@@ -81,6 +95,14 @@ defmodule Ocean.Server do
   end
   def handle_call({:add_ship, _}, _from_pid, state) do
     {:reply, {:error, "how big the ocean blue"}, state}
+  end
+
+  def handle_call({:hit?, %{x: x, y: y}}, _from_pid, state = %{ships: ships}) do
+    strike = Ship.new("strike", x, y, x, y )
+    case Enum.any?(ships, fn ship -> on_top_of(strike, ship) end) do
+      true  -> {:reply, {:ok, :hit}, state}
+      false -> {:reply, {:ok, :miss}, state}
+    end
   end
 
   def handle_call({:stop}, _from_pid, state) do
