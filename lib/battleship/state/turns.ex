@@ -28,7 +28,7 @@ defmodule Turns.Server do
   use GenServer
 
   def handle_call({:take, player, position}, _rom_pid, state) do
-    {:reply, {:ok}, [state || {player, position}]}
+    {:reply, {:ok}, state ++ [{player, position}] }
   end
 
   def handle_call({:get}, _rom_pid, state) do
