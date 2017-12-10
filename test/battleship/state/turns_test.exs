@@ -4,7 +4,7 @@ defmodule TurnsTest do
   setup do
     pid = Turns.start()
 
-    on_exit(fn -> Turns.stop(pid) end)
+    on_exit(fn -> Turns.stop() end)
 
     %{pid: pid}
   end
@@ -16,7 +16,11 @@ defmodule TurnsTest do
     end
 
     test "stop turns", context do
-      assert Turns.stop(context.pid)
+      assert {:ok, "Stopped"} == Turns.stop(context.pid)
+    end
+
+    test "stop by name" do
+      assert {:ok, "Stopped"} == Turns.stop()
     end
   end
 

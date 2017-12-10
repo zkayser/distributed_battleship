@@ -4,7 +4,7 @@ defmodule Turns do
     pid
   end
 
-  def stop(), do: stop(:global.whereis_name(:ocean))
+  def stop(), do: stop(:global.whereis_name(:turns))
   def stop(:undefined), do: {:ok, "Already Stopped"}
   def stop(pid) do
     case Process.alive?(pid) do
