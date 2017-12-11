@@ -45,6 +45,11 @@ defmodule Ocean do
       {:ok, :miss} -> false
     end
   end
+
+  def strikes(pid) do
+    {:ok, result} = GenServer.call(pid, {:strikes})
+    result
+  end
 end
 
 #
@@ -99,10 +104,30 @@ defmodule Ocean.Server do
 
   def handle_call({:hit?, %{x: x, y: y}}, _from_pid, state = %{ships: ships}) do
     strike = Ship.new("strike", x, y, x, y )
+
     case Enum.any?(ships, fn ship -> on_top_of(strike, ship) end) do
-      true  -> {:reply, {:ok, :hit}, state}
-      false -> {:reply, {:ok, :miss}, state}
+      true  -> 
+        {:reply, {:ok, :hit}, Map.merge(state, %{ships: Enum.reduce(ships, [], fn ship, acc -> acc ++ [Ship.strike(ship, x, y)] end)})}
+      false -> 
+        {:reply, {:ok, :miss}, state}
     end
+  end
+
+  # TODO refactor this one.
+  def handle_call({:strikes}, _rom_pid, state) do
+    strikes = Enum.reduce(state.ships, %{}, fn ship, acc -> 
+
+      count = case Map.has_key?(acc, ship.player) do
+        true  -> acc[ship.player]
+        false -> 0
+      end
+
+      strike_count = length(ship.strikes)
+
+      Map.merge(acc, %{ship.player => count + strike_count})
+    end)
+
+    {:reply, {:ok, strikes}, state}
   end
 
   def handle_call({:stop}, _from_pid, state) do
@@ -164,6 +189,7 @@ defmodule Ocean.Server do
     end)
   end
 
+  # TODO push ship length into Ship module.
   defp ship_length(ship) do
     cond do
       ship.from.x == ship.to.x -> abs(ship.from.y - ship.to.y) + 1
@@ -172,13 +198,6 @@ defmodule Ocean.Server do
     end
   end
 
-  # Good
-  # 4,4 -> 4,6
-  # 5,4 -> 5,6
-  # 
-  # Overlapping
-  # 4,4 -> 4,6
-  # 4,6 -> 4,8
   defp on_top_of(this_ship, that_ship) do
     Collision.intersect(
         {this_ship.from.x, this_ship.from.y},
