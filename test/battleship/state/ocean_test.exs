@@ -234,7 +234,14 @@ defmodule OceanTest do
       assert false == Ocean.hit?(context.pid, %{x: 4, y: 8})
       assert false == Ocean.hit?(context.pid, %{x: 4, y: 6})
     end
-  end
 
+    @tag :skip
+    test "who blewup who" do
+      
+    end
+    
+    @tag :skip
+    test "prove strikes"
+  end
 end
 
