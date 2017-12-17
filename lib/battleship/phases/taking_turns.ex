@@ -19,11 +19,11 @@ defmodule TakingTurns do
   end
 
   defp process(turn_results, _cean_pid, []), do: turn_results
-  defp process(turn_results, ocean_pid, [turn | turns]) do
-    process(turn_results ++ [evaulate(ocean_pid, turn)], ocean_pid, turns)
+  defp process(turn_results, ocean_pid, [{player, position} | turns]) do
+    process(turn_results ++ [evaulate(ocean_pid, player, position)], ocean_pid, turns)
   end
 
-  defp evaulate(ocean_pid, {player, position}) do
+  defp evaulate(ocean_pid, player, position) do
     case Ocean.hit?(ocean_pid, position) do
       true  -> {player, position, :hit}
       false -> {player, position, :miss}
