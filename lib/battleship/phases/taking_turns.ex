@@ -9,9 +9,8 @@ defmodule TakingTurns do
     turns = Turns.get(turns_pid)
 
     turn_results = take_turns([], ocean_pid, turns)
-    phase_context = Map.merge(phase_context, %{turn_results: turn_results})
 
-    Map.merge(phase_context, %{turn_count: turn_count + length(turns)})
+    Map.merge(phase_context, %{turn_count: turn_count + length(turns), turn_results: turn_results})
   end
 
   def tick(phase_context) do
