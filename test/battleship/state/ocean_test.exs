@@ -256,10 +256,6 @@ defmodule OceanTest do
 
       assert %{"player1" => 2} ==  Ocean.strikes(context.pid) 
     end
-    
-    @tag :skip
-    test "prove strikes" do
-    end
   end
 end
 

@@ -103,11 +103,12 @@ defmodule Ocean.Server do
   end
 
   def handle_call({:hit?, %{x: x, y: y}}, _from_pid, state = %{ships: ships}) do
-    strike = Ship.new("strike", x, y, x, y )
+    bomb = Position.new(x, y)
 
-    case Enum.any?(ships, fn ship -> on_top_of(strike, ship) end) do
+    case Ships.strike?(ships, bomb) do
       true  -> 
-        {:reply, {:ok, :hit}, Map.merge(state, %{ships: Enum.reduce(ships, [], fn ship, acc -> acc ++ [Ship.strike(ship, x, y)] end)})}
+        {:reply, {:ok, :hit}, 
+          Map.merge(state, %{ships: Ships.strike(ships, Position.new(x, y))})}
       false -> 
         {:reply, {:ok, :miss}, state}
     end

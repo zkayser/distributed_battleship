@@ -49,6 +49,19 @@ defmodule ShipTest do
 
       assert %Ship{from: %Position{x: 1, y: 2}, to: %Position{x: 4, y: 2}, strikes: []} == ship
     end
+
+    test "strike in constructor" do
+      assert Ship.new("struck", 1, 1, 1, 2, [Position.new(1, 1)])
+    end
+  end
+
+  describe "question" do
+    test "a strike" do
+      ship = Ship.new("Anonymous", 1, 1, 1, 2)
+
+      assert Ship.strike?(ship, Position.new(1, 1))
+      refute Ship.strike?(ship, Position.new(10, 10))
+    end
   end
 end
 
