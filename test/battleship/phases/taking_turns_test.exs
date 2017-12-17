@@ -10,8 +10,8 @@ defmodule TakingTurnsTest do
     Players.register(players_pid, "Bar")
 
     Ocean.size(ocean_pid, %{"player1" => true, "player2" => true})
-    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Fred", 0, 0, 0, 2)
-    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Jim",  1, 0, 1, 4)
+    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Foo", 0, 0, 0, 2)
+    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Bar",  1, 0, 1, 4)
 
     on_exit(fn -> 
       Players.stop()
@@ -46,8 +46,8 @@ defmodule TakingTurnsTest do
     test "two turns", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
-      {:ok} = Turns.take(context.turns_pid, "Ed", %{x: 5, y: 10})
-      {:ok} = Turns.take(context.turns_pid, "Jim", %{x: 5, y: 10})
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 5, y: 10})
+      {:ok} = Turns.take(context.turns_pid, "Bar", %{x: 5, y: 10})
 
       phase_context = TakingTurns.tick(phase_context)
 
@@ -59,21 +59,21 @@ defmodule TakingTurnsTest do
     test "one miss", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
-      {:ok} = Turns.take(context.turns_pid, "Ed", %{x: 5, y: 10})
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 5, y: 10})
  
       phase_context = TakingTurns.tick(phase_context)
 
-      assert {"Ed", %{x: 5, y: 10}, :miss} in phase_context.turn_results
+      assert {"Foo", %{x: 5, y: 10}, :miss} in phase_context.turn_results
     end
     
     test "one strike", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
-      {:ok} = Turns.take(context.turns_pid, "Ed", %{x: 0, y: 0})
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
  
       phase_context = TakingTurns.tick(phase_context)
 
-      assert {"Ed", %{x: 0, y: 0}, :hit} in phase_context.turn_results
+      assert {"Foo", %{x: 0, y: 0}, :hit} in phase_context.turn_results
     end
   end
 end
