@@ -49,7 +49,7 @@ defmodule TurnsTest do
       assert result == [{"Ed", %Position{x: 5, y: 10}}]
     end
     
-     test "take many turns and get them", context do
+    test "take many turns and get them", context do
       {:ok} = Turns.take(context.pid, "Ed",   %Position{x: 1, y: 11})
       {:ok} = Turns.take(context.pid, "Jim",  %Position{x: 2, y: 12})
       {:ok} = Turns.take(context.pid, "Fred", %Position{x: 3, y: 13})
