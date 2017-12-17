@@ -34,13 +34,20 @@ First get over all the firewall issues with are bound to hurt. The game uses erl
 * The public UI shows players names, a cound of the ships they are adding and an empty rippling ocean.
 * Commence firing.
 
-## Differences
+## Rule Differences
 
 The rules for normal 2 player battleships work well but some changes are needed to scale to more people.
 
 * If you strike an opponents ship who should know about it? You should, of coarse, but if all players also know it then you can organize into attack groups which if better.
 * If you miss should your opponents know? Every guess improves the next players guess, unless there are no turns, just a free flow of bombs launched at random. Then seeing your opponents misses will slow you down, and make the game better.
 * When you add ships to a shared ocean, there may already be a ship there. This gives players another way to learn where opponents ships are. Is this fare? Of coarse it is. Track collusions and plan your bombing runs.
+
+## Scaling
+
+The game scales as more players register. The ratios are:
+
+* Ocean size:                       number of players * 10 square
+* Number of ship parts per player:  ocean size * 0.75
 
 ## Running
 
@@ -49,6 +56,24 @@ There are a set of scripts that help the distributed game start. First start the
   > bin/start_battleships.sh
 
 Then connect up the user interface for the 
+
+## Player API
+
+The following describes how you might interface with the battleships server in order to play the game.
+
+Messages that you will send during the span of the game.
+
+|| Name        || Format                                                                                                |
+| Connect      |                                                                                                        |
+| Register:    | {:register, player_name}                                                                               |
+| Add ships:   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
+| Take a turn: | {:take, player_name, position}                                                                         |
+
+Messages that you will receive during the game.
+
+|| Name     || Format                                                                                               |
+| Congrats  | {"congratulations", ocean_size, max_ship_parts}                                                       |
+
 
 ## Game Commander Design
 
