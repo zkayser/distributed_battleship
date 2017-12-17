@@ -60,7 +60,7 @@ defmodule TakingTurnsTest do
       assert {"Ed", %{x: 5, y: 10}, :miss} in phase_context.turn_results
     end
     
-    test "one hit", context do
+    test "one strike", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
       {:ok} = Turns.take(context.turns_pid, "Ed", %{x: 0, y: 0})

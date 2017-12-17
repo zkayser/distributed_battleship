@@ -39,8 +39,8 @@ defmodule Ocean do
     GenServer.call(pid, {:add_ship, Ship.new(player, from_x, from_y, to_x, to_y)})
   end
 
-  def hit?(pid, position) do
-    case GenServer.call(pid, {:hit?, position}) do
+  def strike(pid, position) do
+    case GenServer.call(pid, {:strike, position}) do
       {:ok, :hit}  -> true
       {:ok, :miss} -> false
     end
@@ -102,7 +102,8 @@ defmodule Ocean.Server do
     {:reply, {:error, "how big the ocean blue"}, state}
   end
 
-  def handle_call({:hit?, %{x: x, y: y}}, _from_pid, state = %{ships: ships}) do
+  # Record a strike on a ship if one is in the way of this bomb
+  def handle_call({:strike, %{x: x, y: y}}, _from_pid, state = %{ships: ships}) do
     bomb = Position.new(x, y)
 
     case Ships.strike?(ships, bomb) do

@@ -26,7 +26,7 @@ defmodule TakingTurns do
   end
 
   defp turn(ocean_pid, player, position) do
-    case Ocean.hit?(ocean_pid, position) do
+    case Ocean.strike(ocean_pid, position) do
       true  -> {player, position, :hit}
       false -> {player, position, :miss}
     end
