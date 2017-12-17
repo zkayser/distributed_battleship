@@ -26,3 +26,4 @@ defmodule WaitingForPlayers do
     Map.merge(new_phase_context, phase_context)
   end
 end
+

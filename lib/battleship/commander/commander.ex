@@ -8,7 +8,7 @@ defmodule Commander do
     waiting_for_players: &WaitingForPlayers.tick/1,
     start_game:          &StartGame.tick/1,
     adding_ships:        &AddingShips.tick/1,
-    taking_turns:        &Commander.noop/1,
+    taking_turns:        &TakingTurns.tick/1,
     feedback:            &Commander.noop/1,
     scoreboard:          &Commander.noop/1,
     finish:              &Commander.noop/1
