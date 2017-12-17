@@ -13,8 +13,13 @@ defmodule TakingTurns do
     Map.merge(phase_context, %{turn_count: turn_count + length(turns), turn_results: turn_results})
   end
 
-  def tick(phase_context) do
-    Map.merge(phase_context, %{turn_count: 0})
+  def tick(phase_context = %{service: %{players_pid: players_pid}}) do
+    {:ok, registered_players} = Players.registered_players(players_pid)
+
+    Map.merge(phase_context, %{
+      turn_count: 0,
+      registered_players: registered_players
+    })
   end
 
   defp take_turns(turn_results, _cean_pid, []), do: turn_results

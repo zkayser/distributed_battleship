@@ -2,21 +2,26 @@ defmodule TakingTurnsTest do
   use ExUnit.Case
 
   setup() do
+    players_pid = Players.start()
     ocean_pid = Ocean.start()
     turns_pid = Turns.start()
+
+    Players.register(players_pid, "Foo")
+    Players.register(players_pid, "Bar")
 
     Ocean.size(ocean_pid, %{"player1" => true, "player2" => true})
     {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Fred", 0, 0, 0, 2)
     {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Jim",  1, 0, 1, 4)
 
     on_exit(fn -> 
+      Players.stop()
       Ocean.stop()
       Turns.stop()
     end)
 
     [
       ocean_pid: ocean_pid, turns_pid: turns_pid,
-      phase_context: %{service: %{ocean_pid: ocean_pid, turns_pid: turns_pid}}
+      phase_context: %{service: %{players_pid: players_pid, ocean_pid: ocean_pid, turns_pid: turns_pid}}
     ]
   end
 
@@ -25,6 +30,7 @@ defmodule TakingTurnsTest do
       phase_context = TakingTurns.tick(context.phase_context)
 
       assert phase_context.turn_count == 0
+      assert Map.size(phase_context.registered_players) > 0
     end
   end
 
