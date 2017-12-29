@@ -68,15 +68,16 @@ Messages that you will send during the span of the game.
   | Name         | Format                                                                                                 |
   |--------------|--------------------------------------------------------------------------------------------------------|
   | Connect      |                                                                                                        |
-  | Register:    | {:register, player_name}                                                                               |
-  | Add ships:   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
-  | Take a turn: | {:take, player_name, position}                                                                         |
+  | Register     | {:register, player_name}                                                                               |
+  | Add ships    | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
+  | Take a turn  | {:take, player_name, position}                                                                         |
 
 Messages that you will receive during the game.
 
-  | Name      | Format                                                             |
-  |-----------|--------------------------------------------------------------------|
-  | Congrats  | {"congratulations", ocean_size, max_ship_parts}                    |
+  | Name        | Format                                                             |
+  |-------------|--------------------------------------------------------------------|
+  | Congrats    | {"congratulations", ocean_size, max_ship_parts}                    |
+  | Turn Result | {playe_name, position, :hit/:miss}                                 |
 
 ## Game Commander Design
 
