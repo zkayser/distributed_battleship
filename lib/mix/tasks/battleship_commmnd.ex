@@ -25,13 +25,13 @@ defmodule Battleship.Command do
   end
   defp lookup_service(service, true) do
     :timer.sleep(1000)
-    the_pid(:global.whereis_name(service))
+    the_pid(service, :global.whereis_name(service))
   end
 
-  defp the_pid(:undefined) do
-    {:error, "players service not found"}
+  defp the_pid(service, :undefined) do
+    {:error, "#{service} service not found"}
   end
-  defp the_pid(pid) do
+  defp the_pid(_ervice, pid) do
     {:ok, pid}
   end
 end
