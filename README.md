@@ -65,7 +65,8 @@ The following describes how you might interface with the battleships server in o
 
 Messages that you will send during the span of the game.
 
-  || Name        || Format                                                                                                |
+  | Name         | Format                                                                                                 |
+  |--------------|--------------------------------------------------------------------------------------------------------|
   | Connect      |                                                                                                        |
   | Register:    | {:register, player_name}                                                                               |
   | Add ships:   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
@@ -73,8 +74,9 @@ Messages that you will send during the span of the game.
 
 Messages that you will receive during the game.
 
-  || Name     || Format                                                                                               |
-  | Congrats  | {"congratulations", ocean_size, max_ship_parts}                                                       |
+  | Name      | Format                                                             |
+  |-----------|--------------------------------------------------------------------|
+  | Congrats  | {"congratulations", ocean_size, max_ship_parts}                    |
 
 ## Game Commander Design
 
