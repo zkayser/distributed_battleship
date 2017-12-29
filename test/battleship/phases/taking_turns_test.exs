@@ -11,7 +11,7 @@ defmodule TakingTurnsTest do
 
     Ocean.size(ocean_pid, %{"player1" => true, "player2" => true})
     {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Foo", 0, 0, 0, 2)
-    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Bar",  1, 0, 1, 4)
+    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Bar", 1, 0, 1, 4)
 
     on_exit(fn -> 
       Players.stop()
@@ -74,6 +74,46 @@ defmodule TakingTurnsTest do
       phase_context = TakingTurns.tick(phase_context)
 
       assert {"Foo", %{x: 0, y: 0}, :hit} in phase_context.turn_results
+    end
+  end
+
+  describe "notify players of turn results" do
+    test "one player one turn", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
+ 
+      TakingTurns.tick(phase_context)
+
+      assert_receive {"Foo", %{x: 0, y: 0}, :hit}
+    end
+
+    test "one player two turns", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 5, y: 10})
+ 
+      TakingTurns.tick(phase_context)
+
+      assert_receive {"Foo", %{x: 0, y: 0},  :hit}
+      assert_receive {"Foo", %{x: 5, y: 10}, :miss}
+    end
+
+    test "two players two turns each", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 5, y: 10})
+      {:ok} = Turns.take(context.turns_pid, "Bar", %{x: 1, y: 0})
+      {:ok} = Turns.take(context.turns_pid, "Bar", %{x: 5, y: 10})
+ 
+      TakingTurns.tick(phase_context)
+
+      assert_receive {"Foo", %{x: 0, y: 0},  :hit}      
+      assert_receive {"Foo", %{x: 5, y: 10}, :miss}
+      assert_receive {"Bar", %{x: 1, y: 0},  :hit}      
+      assert_receive {"Bar", %{x: 5, y: 10}, :miss}
     end
   end
 end

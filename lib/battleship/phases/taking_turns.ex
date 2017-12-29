@@ -5,10 +5,10 @@ defmodule TakingTurns do
 
   require Logger
   
-  def tick(phase_context = %{turn_count: turn_count, service: %{ocean_pid: ocean_pid, turns_pid: turns_pid}}) do
+  def tick(phase_context = %{turn_count: turn_count, registered_players: registered_players, service: %{ocean_pid: ocean_pid, turns_pid: turns_pid}}) do
     turns = Turns.get(turns_pid)
 
-    turn_results = take_turns([], ocean_pid, turns)
+    turn_results = take_turns([], ocean_pid, registered_players, turns)
 
     Map.merge(phase_context, %{turn_count: turn_count + length(turns), turn_results: turn_results})
   end
@@ -22,11 +22,12 @@ defmodule TakingTurns do
     })
   end
 
-  defp take_turns(turn_results, _cean_pid, []), do: turn_results
-  defp take_turns(turn_results, ocean_pid, [{player, position} | turns]) do
+  defp take_turns(turn_results, _cean_pid, _egistered_players, []), do: turn_results
+  defp take_turns(turn_results, ocean_pid, registered_players, [{player, position} | turns]) do
     take_turns(turn_results ++ [
       turn(ocean_pid, player, position)
-    ], ocean_pid, turns)
+      |> notify_player(registered_players)
+    ], ocean_pid, registered_players, turns)
   end
 
   defp turn(ocean_pid, player, position) do
@@ -34,5 +35,11 @@ defmodule TakingTurns do
       true  -> {player, position, :hit}
       false -> {player, position, :miss}
     end
+  end
+
+  defp notify_player(turn_result = {player, _osition, _esult}, registered_players) do
+    send registered_players[player], turn_result
+
+    turn_result
   end
 end
