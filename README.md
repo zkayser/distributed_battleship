@@ -7,12 +7,11 @@
 A battleship game commander orchestrates the distributed players. Each player is a Node on the erlang network
 and can interact with the commander with the following messsages:
 
-* Once the Game Commander is started players wil have 60s to start their player and connect.
-* start-game will be cast to all players informing them of the size of the board.
-* Each player will send a ship-at message allocating a space on the board for a ship type.
-* The commander will inform the players its time to take a turn and the player will return an x,y guess.
-* Once all players have taken a turn the commander will cast a feedback message to each player about their individual success.
-* Then another turn will be initiated.
+* Once the Game Commander is started players will have some time to start their player and connect.
+* All players will be send a notification that the game is started and the ocean size and the number of ship parts they can allocated.
+* Each player will be able to add a set of ships parts for each ship they allocate.
+* The commander will inform the players its time to take a turn and the players can submit their guesses as to where their opponents have placed their ships.
+* Play containues until there is one player remaining with surviving ships.
 
 ## Setup
 
@@ -83,13 +82,13 @@ Messages that you will receive during the game.
 
 Game phases:
 
-* Await players (60 second timer)
+* Await players
 
-Players connect and send in their details.
+Players connect and send in their names.
 
 * Start game
 
-Players are told its time to start with the ocean size, and the number of ship compoents they can use.
+Players are told its time to start with the ocean size, and the number of ship parts they can use.
 
 * Player ships
 
