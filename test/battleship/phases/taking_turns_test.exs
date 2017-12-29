@@ -115,6 +115,18 @@ defmodule TakingTurnsTest do
       assert_receive {"Bar", %{x: 1, y: 0},  :hit}      
       assert_receive {"Bar", %{x: 5, y: 10}, :miss}
     end
+
+    test "one player should learn about the other players strike", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
+ 
+      TakingTurns.tick(phase_context)
+
+      assert_receive {"Foo", %{x: 0, y: 0}, :hit}      
+      assert_receive {"Foo", %{x: 0, y: 0}, :hit}
+    end
+    
   end
 end
 

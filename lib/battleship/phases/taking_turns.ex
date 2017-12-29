@@ -37,8 +37,10 @@ defmodule TakingTurns do
     end
   end
 
-  defp notify_player(turn_result = {player, _osition, _esult}, registered_players) do
-    send registered_players[player], turn_result
+  defp notify_player(turn_result, registered_players) do
+    Enum.each(registered_players, fn {_layer, player_pid} -> 
+      send player_pid, turn_result
+    end)
 
     turn_result
   end
