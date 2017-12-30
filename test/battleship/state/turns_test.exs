@@ -91,5 +91,17 @@ defmodule TurnsTest do
     end
   end
 
+  describe "wrong types" do
+    test "string x coord", context do
+      result = Turns.take(context.pid, "Ed",   %Position{x: "1", y: 11})
+
+      assert result == {:error, "position must be numeric"}
+    end
+    test "string y coord", context do
+      result = Turns.take(context.pid, "Ed",   %Position{x: 1, y: "11"})
+
+      assert result == {:error, "position must be numeric"}
+    end
+  end
 end
 

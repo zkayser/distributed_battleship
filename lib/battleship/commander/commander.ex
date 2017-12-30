@@ -42,7 +42,8 @@ defmodule Commander do
         %{
           players_pid: Players.start(),
           ocean_pid:   Ocean.start(),
-          trigger_pid: Trigger.start()
+          trigger_pid: Trigger.start(),
+          turns_pid:   Turns.start()
         }
       })
 

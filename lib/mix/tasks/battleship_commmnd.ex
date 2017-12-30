@@ -1,14 +1,18 @@
 defmodule Battleship.Command do
 
+  def puts(service, command_function) do
+    IO.inspect command(service, command_function)
+  end
+
   def command(service, command_function) do
     with connected      <- connect(),
          {:ok, pid}     <- lookup_service(service, connected)
     do
       {:ok, message} = command_function.(pid)
-      IO.inspect message
+      message
     else
-      {:error, message} -> IO.puts message
-      message           -> IO.inspect message
+      {:error, message} -> message
+      message           -> message
     end
   end
 

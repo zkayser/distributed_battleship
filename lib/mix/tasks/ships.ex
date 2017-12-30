@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Battleship.Ships do
   @shortdoc "List all registered ships"
 
   def run(_) do
-    Battleship.Command.command(:ocean, fn pid ->
+    Battleship.Command.puts(:ocean, fn pid ->
       {:ok, Ocean.ships(pid) }
     end)
   end

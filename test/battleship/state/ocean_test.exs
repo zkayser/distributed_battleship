@@ -85,6 +85,30 @@ defmodule OceanTest do
         assert {:error, "off the ocean: should be within 0x0 and #{ocean_size - 1}x#{ocean_size - 1}"} == result
       end)
     end
+
+    test "the position of the ship must be numeric", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+
+      data = [
+        {"0",0,0,0},
+        {0,"0",0,0},
+        {0,0,"0",0},
+        {0,0,0,"0"}
+      ]
+
+      # Raw message format
+      Enum.each(data, fn {from_x, from_y, to_x, to_y} ->
+        result = GenServer.call(context.pid, {:add_ship, %{ player: "BadShip", from: %{ from_x: from_x, from_y: from_y }, to: %{ to_x: to_x, to_y: to_y } } })
+        assert result == {:error, "ship position must be numeric"}
+      end)
+
+      # Ship struct
+      Enum.each(data, fn {from_x, from_y, to_x, to_y} ->
+        result = Ocean.add_ship(context.pid, "BadShip", from_x, from_y, to_x, to_y)
+        assert result == {:error, "ship position must be numeric"}
+      end)
+    end
+
   end
 
   describe "no diagonal ships" do

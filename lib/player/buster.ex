@@ -1,9 +1,10 @@
 defmodule Buster do
   def start() do
-    with true <- connect(),
-        {:ok, _essage} <- register(),
+    with true             <- connect(),
+        {:ok, _essage}    <- register(),
         {:ok, ocean_size} <- wait_for_congratulations(),
-        {:ok, _dded} <- add_ship(ocean_size)
+        {:ok, _dded}      <- add_ship(ocean_size),
+        {:ok, _anything}  <- listen_for_turns()
     do
       IO.puts(">>>> FINISHED")
     else
@@ -29,27 +30,34 @@ defmodule Buster do
   end
 
   def wait_for_congratulations() do
-    IO.gets("Wait to learn the size of the ocean")
+    IO.puts("Waiting to hear about the size of the ocean")
+    wait_for_message()
+  end
 
+  defp wait_for_message() do
     receive do
       {"congratulations", ocean_size, max_ship_parts} -> 
+        IO.puts("")
         IO.puts(">>>> Ocean Size: #{ocean_size}")
         IO.puts(">>>> Max Ship Parts: #{max_ship_parts}")
         {:ok, ocean_size}
       anything_else -> 
-        {:error, "Oops: #{inspect anything_else}"}
+        IO.puts("")
+        IO.inspect {:error, "Oops: #{inspect anything_else}"}
+        :timer.sleep(5000)
+        wait_for_message()
     after
-      1000 -> 
-        {:error, ">>>> Oops: Timeout, No message about ocean size"}
+      5000 -> 
+        IO.write(".")
+        wait_for_message()
     end
-
   end
 
   defp add_ship(_cean_size) do
     IO.gets("Add a ship?")
 
     ocean_pid = :global.whereis_name(:ocean)
-    GenServer.call(ocean_pid, {:add_ship, %{
+    result = GenServer.call(ocean_pid, {:add_ship, %{
           player: "Buster",
           from: %{
             from_x: 1,
@@ -62,5 +70,27 @@ defmodule Buster do
         }
       }
     )
+ 
+    IO.inspect(result)
+
+    result
+  end
+
+  defp listen_for_turns() do
+    IO.puts "Waiting for turns"
+
+    listen_for_turns_loop()
+  end
+
+  defp listen_for_turns_loop() do
+    receive do
+      message -> 
+        IO.puts("")
+        IO.inspect(message)
+    after 
+      5000 -> IO.write(".")
+    end
+
+    listen_for_turns_loop()
   end
 end

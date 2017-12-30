@@ -27,6 +27,9 @@ end
 defmodule Turns.Server do
   use GenServer
 
+  def handle_call({:take, _layer, %{x: x, y: y}}, _rom_pid, state) when not is_number(x) or not is_number(y) do
+    {:reply, {:error, "position must be numeric"}, state}
+  end
   def handle_call({:take, player, position}, _rom_pid, state) do
     {:reply, {:ok}, state ++ [{player, position}] }
   end

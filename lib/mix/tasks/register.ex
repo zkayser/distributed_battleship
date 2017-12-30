@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Battleship.Register do
     IO.puts "usage: register <name>" 
   end
   def run(name) do
-    Battleship.Command.command(:players, fn pid ->
+    Battleship.Command.puts(:players, fn pid ->
       {:ok, Players.register(pid, name) }
     end)
   end

@@ -7,7 +7,10 @@ defmodule Mix.Tasks.Battleship.TakeTurn do
     IO.puts "usage: take_turn <name> <x> <y>" 
   end
   def run([name, x, y]) do
-    Battleship.Command.command(:turns, fn pid ->
+    {x, _} = Integer.parse(x)
+    {y, _} = Integer.parse(y)
+
+    Battleship.Command.puts(:turns, fn pid ->
       {:ok, Turns.take(pid, name, %{x: x, y: y}) }
     end)
   end

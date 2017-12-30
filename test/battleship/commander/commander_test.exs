@@ -88,6 +88,7 @@ defmodule CommanderTest do
       assert context.service.players_pid, "didn't generate a players pid"
       assert context.service.ocean_pid, "didn't generate a ocean pid"
       assert context.service.trigger_pid, "didn't generate a trigger pid"
+      assert context.service.turns_pid, "didn't generate a turns pid"
     end
   end
 
