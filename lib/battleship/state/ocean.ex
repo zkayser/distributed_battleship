@@ -70,8 +70,12 @@ defmodule Ocean.Server do
     {:reply, {:ok, ocean_size, max_ship_parts}, Map.merge(state, %{ocean_size: ocean_size, max_ship_parts: max_ship_parts})} 
   end
 
+  def handle_call({:get_size}, _from_pid, 
+                  state = %{ocean_size: ocean_size, max_ship_parts: max_ship_parts}) do
+    {:reply, {:ok, ocean_size, max_ship_parts}, state} 
+  end
   def handle_call({:get_size}, _from_pid, state) do
-    {:reply, {:ok, state.ocean_size, state.max_ship_parts}, state} 
+    {:reply, {:error, "how big the ocean blue"}, state}
   end
 
   def handle_call({:ships}, _from_pid, state) do

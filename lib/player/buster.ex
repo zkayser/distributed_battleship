@@ -1,9 +1,9 @@
 defmodule Buster do
-  def start() do
+  def start(player) do
     with true             <- connect(),
-        {:ok, _essage}    <- register(),
+        {:ok, _essage}    <- register(player),
         {:ok, ocean_size} <- wait_for_congratulations(),
-        {:ok, _dded}      <- add_ship(ocean_size),
+        {:ok, _dded}      <- add_ship(player, ocean_size),
         {:ok, _anything}  <- listen_for_turns()
     do
       IO.puts(">>>> FINISHED")
@@ -21,12 +21,12 @@ defmodule Buster do
     Node.connect(:"commander@#{hostname}")
   end
 
-  defp register() do
-    IO.gets("Register a player?")
+  defp register(player) do
+    IO.gets("Register a player? #{player}")
 
     :timer.sleep(1000)
     players_pid = :global.whereis_name(:players)
-    GenServer.call(players_pid, {:register, "Buster"})
+    GenServer.call(players_pid, {:register, player})
   end
 
   def wait_for_congratulations() do
@@ -53,12 +53,12 @@ defmodule Buster do
     end
   end
 
-  defp add_ship(_cean_size) do
+  defp add_ship(player, _cean_size) do
     IO.gets("Add a ship?")
 
     ocean_pid = :global.whereis_name(:ocean)
     result = GenServer.call(ocean_pid, {:add_ship, %{
-          player: "Buster",
+          player: player,
           from: %{
             from_x: 1,
             from_y: 2

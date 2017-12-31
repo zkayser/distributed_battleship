@@ -31,6 +31,10 @@ defmodule OceanTest do
       assert {:ok, 20, 15} == Ocean.size(context.pid)
     end
 
+    test "cant get the size when we dont know yet", context do
+      {:error, "how big the ocean blue"} = Ocean.size(context.pid)
+    end
+    
     test "we dont know the ocean size yet", context do
       {:error, "how big the ocean blue"} = Ocean.add_ship(context.pid, "Ahab", 0, 0, 0, 2)
     end

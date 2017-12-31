@@ -4,6 +4,29 @@ defmodule Ui do
   @graphic_water     "~"
   @graphic_strike    "X"
 
+  def loop(ocean_pid) do
+    ocean_size = wait_for_ocean_size(ocean_pid)
+
+    {:ok, ships} = Ocean.ships(ocean_pid)
+
+    ocean = Ui.render(:text, ocean_size, %{ships: ships})
+
+    IO.write(ocean)
+
+    :timer.sleep(5000)
+    loop(ocean_pid)
+  end
+
+  defp wait_for_ocean_size(ocean_pid) do
+    case Ocean.size(ocean_pid) do
+      {:ok, ocean_size, _} -> ocean_size
+      _                    ->
+        IO.puts("Waiting for players to register")
+        :timer.sleep 5000
+        wait_for_ocean_size(ocean_pid)
+    end
+  end
+
   def render(:text, ocean_size, data) do
     players = active_players(data.ships)
 
@@ -20,6 +43,7 @@ defmodule Ui do
 
   defp player_code(player) do
     player
+    |> to_string
     |> String.first
     |> String.capitalize
   end
