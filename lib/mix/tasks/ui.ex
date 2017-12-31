@@ -5,8 +5,10 @@ defmodule Mix.Tasks.Battleship.Ui do
 
   def run([]) do
     Battleship.Command.command(:ocean, fn pid ->
-      ships = Ocean.ships(pid)
-      Ui.render(:text, 10, %{ships: ships})
+      {:ok, ships} = Ocean.ships(pid)
+      ocean = Ui.render(:text, 10, %{ships: ships})
+
+      IO.write(ocean)
 
       {:ok, ships }
     end)
