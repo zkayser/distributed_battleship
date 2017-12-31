@@ -78,15 +78,15 @@ defmodule Ocean.Server do
     {:reply, {:ok, state.ships}, state} 
   end
 
-  # TODO these numeric error handlers are ugly. Duplication with Struct type as well,
-  def handle_call({:add_ship, %{from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}}, _rom_pid, state) when not is_number(from_x) or not is_number(from_y) or not is_number(to_x) or not is_number(to_y) do
-    {:reply, {:error, "ship position must be numeric"}, state}
-  end
-  def handle_call({:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}}, from_pid, 
+  def handle_call({:add_ship, %{player: player, 
+                                from: %{from_x: from_x, from_y: from_y}, 
+                                to: %{to_x: to_x, to_y: to_y}}}, 
+                  from_pid, 
                   state = %{ships: _hips, ocean_size: _cean_size, max_ship_parts: _ax_ship_parts}) do
     handle_call({:add_ship, Ship.new(player, from_x, from_y, to_x, to_y)}, from_pid, state)
   end
-  def handle_call({:add_ship, %Ship{from: %{x: from_x, y: from_y}, to: %{x: to_x, y: to_y}}}, _from_pid, state) when not is_number(from_x) or not is_number(from_y) or not is_number(to_x) or not is_number(to_y) do
+  def handle_call({:add_ship, %Ship{from: %{x: from_x, y: from_y}, to: %{x: to_x, y: to_y}}}, _from_pid, state) 
+                  when not is_number(from_x) or not is_number(from_y) or not is_number(to_x) or not is_number(to_y) do
     {:reply, {:error, "ship position must be numeric"}, state}
   end
   def handle_call({:add_ship, ship = %Ship{player: player}}, _from_pid, 
