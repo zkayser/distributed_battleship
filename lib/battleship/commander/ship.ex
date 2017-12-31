@@ -26,6 +26,9 @@ defmodule Ship do
 
   defp strike_or_miss(false, ship, _osition), do: ship
   defp strike_or_miss(true,  ship, position) do
-    Map.merge(ship, %{strikes: ship.strikes ++ [position]})
+    case struck?(ship, position) do
+      false  -> Map.merge(ship, %{strikes: ship.strikes ++ [position]})
+      true   -> ship
+    end
   end
 end

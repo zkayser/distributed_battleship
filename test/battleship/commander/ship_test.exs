@@ -47,6 +47,16 @@ defmodule ShipTest do
         %Position{x: 1, y: 2}, %Position{x: 2, y: 2}, %Position{x: 3, y: 2}]} == ship
     end
 
+    test "many strikes in the same location" do
+      ship = Ship.new("Anonymous", 1, 2, 4, 2)
+        |> Ship.strike(1, 2)
+        |> Ship.strike(1, 2)
+        |> Ship.strike(1, 2)
+
+      assert %Ship{from: %Position{x: 1, y: 2}, to: %Position{x: 4, y: 2}, strikes: [
+        %Position{x: 1, y: 2}]} == ship
+    end
+
     test "missed the ship" do
        ship = Ship.new("Anonymous", 1, 2, 4, 2)
         |> Ship.strike(10, 20)

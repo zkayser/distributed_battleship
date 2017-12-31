@@ -284,6 +284,16 @@ defmodule OceanTest do
 
       assert %{"player1" => 2} ==  Ocean.strikes(context.pid) 
     end
+
+    test "two strikes in same poisition tracked as one strike", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "player1", 3, 3, 5, 3)
+
+      assert true == Ocean.strike(context.pid, %{x: 4, y: 3})
+      assert true == Ocean.strike(context.pid, %{x: 4, y: 3})
+
+      assert %{"player1" => 1} ==  Ocean.strikes(context.pid) 
+    end
   end
 end
 
