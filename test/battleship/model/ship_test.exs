@@ -10,7 +10,7 @@ defmodule ShipTest do
       assert default_ship.to     == %Position{x: 0, y: 0}
     end
 
-    test "construt" do
+    test "construct" do
       ship = %Ship{player: "Ed", from: %Position{x: 1, y: 1}, to: %Position{x: 5, y: 1}}
 
       assert ship.player == "Ed"
@@ -20,8 +20,12 @@ defmodule ShipTest do
       assert ship.to.y   == 1
     end
 
-    test "new" do
+    test "new raw position" do
       assert %Ship{from: %Position{x: 1, y: 2}, to: %Position{x: 3, y: 4}} == Ship.new("Anonymous", 1, 2, 3, 4)
+    end
+
+    test "new position map" do
+      assert %Ship{from: %Position{x: 1, y: 2}, to: %Position{x: 3, y: 4}} == Ship.new("Anonymous", Position.new(1,2), Position.new(3,4))
     end
   end
 
@@ -55,12 +59,26 @@ defmodule ShipTest do
     end
   end
 
+  describe "was struck" do
+    test "hit" do
+      ship = Ship.new("struck", 1, 1, 1, 2, [Position.new(1, 1)])
+
+      assert Ship.struck?(ship, Position.new(1, 1))
+    end
+
+    test "missed" do
+      ship = Ship.new("struck", 1, 1, 1, 2, [Position.new(1, 1)])
+
+      refute Ship.struck?(ship, Position.new(1, 2))
+    end
+  end
+
   describe "question" do
     test "a strike" do
       ship = Ship.new("Anonymous", 1, 1, 1, 2)
 
-      assert Ship.strike?(ship, Position.new(1, 1))
-      refute Ship.strike?(ship, Position.new(10, 10))
+      assert Ship.at?(ship, Position.new(1, 1))
+      refute Ship.at?(ship, Position.new(10, 10))
     end
   end
 end

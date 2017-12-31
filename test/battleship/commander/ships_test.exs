@@ -17,8 +17,8 @@ defmodule ShipsTest do
       Ship.new("strike", 2, 2, 2, 3)
     ]
 
-    assert Ships.strike?(ships, Position.new(1,1))
-    refute Ships.strike?(ships, Position.new(10,10))
+    assert Ships.at?(ships, Position.new(1,1))
+    refute Ships.at?(ships, Position.new(10,10))
   end
 end
 

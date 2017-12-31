@@ -113,7 +113,7 @@ defmodule Ocean.Server do
   def handle_call({:strike, %{x: x, y: y}}, _from_pid, state = %{ships: ships}) do
     bomb = Position.new(x, y)
 
-    case Ships.strike?(ships, bomb) do
+    case Ships.at?(ships, bomb) do
       true  -> 
         {:reply, {:ok, :hit}, 
           Map.merge(state, %{ships: Ships.strike(ships, Position.new(x, y))})}

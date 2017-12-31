@@ -1,6 +1,6 @@
 defmodule Ships do
-  def strike?(ships, bomb) do
-    Enum.any?(ships, fn ship -> Ship.strike?(ship, bomb) end)
+  def at?(ships, bomb) do
+    Enum.any?(ships, fn ship -> Ship.at?(ship, bomb) end)
   end
 
   def strike(ships, bomb) do
