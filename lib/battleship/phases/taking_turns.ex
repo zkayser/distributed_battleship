@@ -26,7 +26,7 @@ defmodule TakingTurns do
   defp take_turns(turn_results, ocean_pid, registered_players, [{player, position} | turns]) do
     take_turns(turn_results ++ [
       turn(ocean_pid, player, position)
-      |> notify_player(registered_players)
+      |> notify_players(registered_players)
     ], ocean_pid, registered_players, turns)
   end
 
@@ -37,8 +37,9 @@ defmodule TakingTurns do
     end
   end
 
-  defp notify_player(turn_result, registered_players) do
-    Enum.each(registered_players, fn {_layer, player_pid} -> 
+  defp notify_players(turn_result, registered_players) do
+    Enum.each(registered_players, fn {player, player_pid} -> 
+      Logger.info("Notifying '#{player}' of turn #{inspect turn_result}")
       send player_pid, turn_result
     end)
 

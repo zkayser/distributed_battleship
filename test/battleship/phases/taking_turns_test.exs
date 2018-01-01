@@ -126,6 +126,18 @@ defmodule TakingTurnsTest do
       assert_receive {"Foo", %{x: 0, y: 0}, :hit}      
       assert_receive {"Foo", %{x: 0, y: 0}, :hit}
     end
+  end
+
+  describe "players that disconnect" do
+    test "handle failed send to invalid pid", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+
+      phase_context = Map.merge(phase_context, %{ registered_players: %{"Foo" => :erlang.list_to_pid('<0.999.0>')} })
+
+      Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
+
+      TakingTurns.tick(phase_context)
+    end
     
   end
 end
