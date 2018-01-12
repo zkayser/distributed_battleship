@@ -54,13 +54,11 @@ defmodule CommanderTest do
         |> Map.merge(%{waiting_for_players: %{test_phases: [:start_game]}})
         |> Map.merge(%{start_game:          %{test_phases: [:adding_ships]}})
         |> Map.merge(%{adding_ships:        %{test_phases: [:taking_turns]}})
-        |> Map.merge(%{taking_turns:        %{test_phases: [:feedback]}})
-        |> Map.merge(%{feedback:            %{test_phases: [:scoreboard]}})
-        |> Map.merge(%{scoreboard:          %{test_phases: [:finish]}})
+        |> Map.merge(%{taking_turns:        %{test_phases: [:finish]}})
 
       context = Commander.play(:none, context, phases)
 
-      assert context.tick_count == 7
+      assert context.tick_count == 5
     end
 
     test "dont chnage phase is there is no new_state" do
