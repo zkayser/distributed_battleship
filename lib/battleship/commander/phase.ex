@@ -34,10 +34,13 @@ defmodule Phase do
   end
 
   # Indicate that a phase change is required.
-  def change?(trigger_pid, phase_context, new_phase) do
+  def change?(trigger_pid, phase_context, new_phase, notify \\ fn phase_context -> phase_context end) do
     case Trigger.pulled?(trigger_pid) do
-      true  -> change(phase_context, new_phase)
-      false -> phase_context
+      true  -> 
+        phase_context = notify.(phase_context)
+        change(phase_context, new_phase)
+      false -> 
+        phase_context
     end
   end
   def change(phase_context, new_phase) do

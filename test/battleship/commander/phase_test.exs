@@ -23,6 +23,16 @@ defmodule PhaseTest do
 
       assert state.new_phase == :new_phase
     end
+
+    test "callback on change", context do
+      Phase.change(context.pid)
+
+      phase_context = Phase.change?(context.pid, %{}, :new_phase, fn phase_context ->
+        Map.merge(phase_context, %{yup_is_was_notified: true})
+      end)
+
+      assert phase_context.yup_is_was_notified
+    end
   end
 
   describe "change without trigger" do

@@ -15,7 +15,10 @@ defmodule WaitingForPlayers do
       registered_players: registered_players
     })
 
-    Phase.change?(trigger_pid, phase_context, :start_game)
+    Phase.change?(trigger_pid, phase_context, :start_game, fn phase_context ->
+      Players.stop_registering(players_pid)
+      phase_context
+    end)
   end
 
   def tick(phase_context) do

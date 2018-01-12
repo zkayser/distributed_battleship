@@ -2,7 +2,7 @@ defmodule Players do
   require Logger
 
   def start() do
-    {:ok, pid} = GenServer.start(Players.Server, %{}, name: {:global, :players})
+    {:ok, pid} = GenServer.start(Players.Server, %{players: %{}, active: true}, name: {:global, :players})
 
     pid
   end
@@ -27,33 +27,46 @@ defmodule Players do
   def registered_players(pid) do
     GenServer.call(pid, {:registered_players})
   end
+
+  def stop_registering(pid) do
+    GenServer.call(pid, {:stop_registering})
+  end
 end
 
 defmodule Players.Server do
   use GenServer
   require Logger
 
-  def handle_call({:stop}, _from_pid, players) do
-    {:stop, :normal, {:ok, "Stopped"}, players}
+  def handle_call({:stop}, _from_pid, state) do
+    {:stop, :normal, {:ok, "Stopped"}, state}
   end
 
-  def handle_call({:player_count}, _from_pid,  players) do
-    {:reply, {:ok, length(Node.list)}, players}
+  def handle_call({:player_count}, _from_pid,  state) do
+    {:reply, {:ok, length(Node.list)}, state}
   end
 
-  def handle_call({:register, player_name}, {from_pid, _}, players) do
+  def handle_call({:register, player_name}, {from_pid, _}, state = %{active: false}) do
+    Logger.info("Can not registered #{inspect from_pid}: #{player_name}")
+    {:reply, {:error, "can not register anymore"}, state}
+  end
+  def handle_call({:register, player_name}, {from_pid, _ }, state) do
     Logger.info("Registered #{inspect from_pid}: #{player_name}")
-    players = Map.merge(players, %{player_name => from_pid})
-    {:reply, {:ok, "Now there are #{players |> Map.keys |> length} players"}, players}
+    players = Map.merge(state.players, %{player_name => from_pid})
+    state = Map.merge(state, %{players: players})
+    {:reply, {:ok, "Now there are #{players |> Map.keys |> length} players"}, state}
   end
 
-  def handle_call({:registered_players}, _from_pid, players) do
-    {:reply, {:ok, players}, players}
+  def handle_call({:registered_players}, _from_pid, state) do
+    {:reply, {:ok, state.players}, state}
   end
 
-  def handle_call(message, _from_pid, players) do
+  def handle_call({:stop_registering}, _from_pid, state) do
+    {:reply, {:ok, state.players}, Map.merge(state, %{active: false})}
+  end
+
+  def handle_call(message, _from_pid, state) do
     Logger.warn("Players message not supported: #{inspect message}")
-    {:noreply, players}
+    {:noreply, state}
   end
 
 end
