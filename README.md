@@ -62,14 +62,27 @@ Then connect up the user interface to see the game progress.
 
 The following describes how you might interface with the battleships server in order to play the game.
 
+Network connection first, this adds your beam into the same erlang network as the commander.
+
+  > Node.connect(:"commander@#{hostname}")
+
+To start your beam you will need to add the erlang networking configutation for this cluster:
+
+  > player_name=rosepettle
+  > iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --sname $player_name -r lib/my_player_codeex -e "MyPlayer.start('$player_name')"
+
+How to send message to the commanders services.
+
+  > pid = :global.whereis_name(:players)
+  > GenServer.call(pid, {:register, player})
+
 Messages that you will send during the span of the game.
 
-  | Name         | Format                                                                                                 |
-  |--------------|--------------------------------------------------------------------------------------------------------|
-  | Connect      |                                                                                                        |
-  | Register     | {:register, player_name}                                                                               |
-  | Add ships    | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
-  | Take a turn  | {:take, player_name, position}                                                                         |
+  | Name         | Registry |  Format                                                                                                |
+  |--------------|-------------------------------------------------------------------------------------------------------------------|
+  | Register     | :players | {:register, player_name}                                                                               |
+  | Add ships    | :ocean   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
+  | Take a turn  | :turns   | {:take, player_name, position}                                                                         |
 
 Messages that you will receive during the game.
 

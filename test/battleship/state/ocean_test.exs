@@ -4,7 +4,7 @@ defmodule OceanTest do
   setup() do
     pid = Ocean.start()
 
-    on_exit(fn -> Ocean.stop(pid) end)
+    on_exit(fn -> Ocean.stop() end)
 
     [pid: pid]
   end
@@ -13,6 +13,41 @@ defmodule OceanTest do
 
     test "stop the service" do
       {:ok, "Stopped"} = Ocean.stop()
+    end
+  end
+
+  describe "ocean active?" do
+
+    test "can not get the ships until the ocean is active", context do
+      assert {:error, "no ocean yet"} == Ocean.ships(context.pid)
+    end
+
+    test "can not get size until the ocean is active", context do
+      assert {:error, "no ocean yet"} == Ocean.size(context.pid)
+    end
+
+    test "can not add a ship until the ocean is active", context do
+      assert {:error, "no ocean yet"} == Ocean.add_ship(context.pid, "Ed", 0, 0, 0, 10)
+    end
+
+    test "can not strike a ship until the ocean is active", context do
+      assert {:error, "no ocean yet"} == Ocean.strike(context.pid, %{x: 3, y: 3})
+    end
+
+    test "can not get the strikes until the ocean is active.", context do
+      assert {:error, "no ocean yet"} == Ocean.strikes(context.pid)
+    end
+
+    test "when the ocean is active all the finctios work", context do
+      assert {:error, "no ocean yet"} == Ocean.ships(context.pid)
+
+      assert {:ok, 10, 8} == Ocean.size(context.pid, %{"player1" => true})
+
+      assert {:ok, 10, 8}    == Ocean.size(context.pid)
+      assert {:ok, []}       == Ocean.ships(context.pid)
+      assert {:ok, "Added"}  == Ocean.add_ship(context.pid, "Ed", 0, 0, 0, 1)
+      assert false           == Ocean.strike(context.pid, %{x: 3, y: 3})
+      assert %{"Ed" => 0}    == Ocean.strikes(context.pid)
     end
   end
 
@@ -29,14 +64,6 @@ defmodule OceanTest do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
       assert {:ok, 20, 15} == Ocean.size(context.pid)
-    end
-
-    test "cant get the size when we dont know yet", context do
-      {:error, "how big the ocean blue"} = Ocean.size(context.pid)
-    end
-    
-    test "we dont know the ocean size yet", context do
-      {:error, "how big the ocean blue"} = Ocean.add_ship(context.pid, "Ahab", 0, 0, 0, 2)
     end
   end
 

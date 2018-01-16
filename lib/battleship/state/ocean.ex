@@ -6,7 +6,7 @@ defmodule Ocean do
   @player_ocean_ship_ratio 0.75
 
   def start() do
-    {:ok, pid} = GenServer.start_link(Ocean.Server, %{ships: []}, name: {:global, :ocean})
+    {:ok, pid} = GenServer.start_link(Ocean.Server, %{ships: [], active: false}, name: {:global, :ocean})
 
     pid
   end
@@ -43,12 +43,15 @@ defmodule Ocean do
     case GenServer.call(pid, {:strike, position}) do
       {:ok, :hit}  -> true
       {:ok, :miss} -> false
+      error        -> error
     end
   end
 
   def strikes(pid) do
-    {:ok, result} = GenServer.call(pid, {:strikes})
-    result
+    case GenServer.call(pid, {:strikes}) do
+      {:ok, result} -> result
+      error         -> error
+    end
   end
 end
 
@@ -66,8 +69,15 @@ defmodule Ocean.Server do
   # All ships must be at least 2 parts long.
   @min_ship_length         2
 
+  # Do not allow any command except set_size until the ocean is active. 
+  # This prevents players from adding ships and taking turns until everyone is ready,
+  def handle_call(command, _from_pid, state = %{active: false}) when elem(command, 0) not in [:set_size, :stop] do
+    {:reply, {:error, "no ocean yet"}, state}
+  end
+
   def handle_call({:set_size, ocean_size, max_ship_parts}, _from_pid, state) do
-    {:reply, {:ok, ocean_size, max_ship_parts}, Map.merge(state, %{ocean_size: ocean_size, max_ship_parts: max_ship_parts})} 
+    new_state = Map.merge(state, %{ocean_size: ocean_size, max_ship_parts: max_ship_parts, active: true})
+    {:reply, {:ok, ocean_size, max_ship_parts}, new_state} 
   end
 
   def handle_call({:get_size}, _from_pid, 

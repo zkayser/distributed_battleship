@@ -41,7 +41,15 @@ defmodule PhaseTest do
 
       assert state.new_phase == :new_phase
     end
-    
+
+    test "call back when changed" do
+      state = Phase.change(%{}, :new_phase, fn phase_context ->
+        Map.merge(phase_context, %{yup_is_was_notified: true})
+      end)
+
+      assert state.new_phase == :new_phase
+      assert state.yup_is_was_notified
+    end
   end
 end
 

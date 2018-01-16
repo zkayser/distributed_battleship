@@ -1,5 +1,7 @@
 defmodule TakingTurnsTest do
   use ExUnit.Case
+  
+  import ExUnit.CaptureLog
 
   setup() do
     players_pid = Players.start()
@@ -8,10 +10,6 @@ defmodule TakingTurnsTest do
 
     Players.register(players_pid, "Foo")
     Players.register(players_pid, "Bar")
-
-    Ocean.size(ocean_pid, %{"player1" => true, "player2" => true})
-    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Foo", 0, 0, 0, 2)
-    {:ok, "Added"} = Ocean.add_ship(ocean_pid, "Bar", 1, 0, 1, 4)
 
     on_exit(fn -> 
       Players.stop()
@@ -25,7 +23,17 @@ defmodule TakingTurnsTest do
     ]
   end
 
+  def setup_ocean_size(context) do
+    Ocean.size(context.ocean_pid, %{"player1" => true, "player2" => true})
+    {:ok, "Added"} = Ocean.add_ship(context.ocean_pid, "Foo", 0, 0, 0, 2)
+    {:ok, "Added"} = Ocean.add_ship(context.ocean_pid, "Bar", 1, 0, 1, 4)
+
+    :ok
+  end
+
   describe "initialize" do
+    setup :setup_ocean_size
+
     test "setup the initial phase context", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
@@ -34,7 +42,26 @@ defmodule TakingTurnsTest do
     end
   end
 
+  describe "take turns before ocean active" do
+    test "should not take a turn", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 5, y: 10})
+
+      output = capture_log fn ->
+        phase_context = TakingTurns.tick(phase_context)
+
+        # no turns are taken
+        assert phase_context.turn_count == 0
+      end
+
+      assert output =~ "Foo is trying to take a turn before there is an ocean"
+    end
+  end
+
   describe "turn tracking" do
+    setup :setup_ocean_size
+
     test "no turns", context do
       phase_context = context.phase_context
         |> TakingTurns.tick()
@@ -56,6 +83,8 @@ defmodule TakingTurnsTest do
   end
 
   describe "apply turn to ocean" do
+    setup :setup_ocean_size
+
     test "one miss", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
@@ -78,6 +107,8 @@ defmodule TakingTurnsTest do
   end
 
   describe "notify players of turn results" do
+    setup :setup_ocean_size
+
     test "one player one turn", context do
       phase_context = TakingTurns.tick(context.phase_context)
 
@@ -129,6 +160,8 @@ defmodule TakingTurnsTest do
   end
 
   describe "players that disconnect" do
+    setup :setup_ocean_size
+
     test "handle failed send to invalid pid", context do
       phase_context = TakingTurns.tick(context.phase_context)
 

@@ -10,7 +10,7 @@ defmodule TakingTurns do
 
     turn_results = take_turns([], ocean_pid, registered_players, turns)
 
-    Map.merge(phase_context, %{turn_count: turn_count + length(turns), turn_results: turn_results})
+    Map.merge(phase_context, %{turn_count: turn_count + length(turn_results), turn_results: turn_results})
   end
 
   def tick(phase_context = %{service: %{players_pid: players_pid}}) do
@@ -22,18 +22,26 @@ defmodule TakingTurns do
     })
   end
 
-  defp take_turns(turn_results, _cean_pid, _egistered_players, []), do: turn_results
-  defp take_turns(turn_results, ocean_pid, registered_players, [{player, position} | turns]) do
-    take_turns(turn_results ++ [
-      turn(ocean_pid, player, position)
-      |> notify_players(registered_players)
-    ], ocean_pid, registered_players, turns)
+  defp take_turns(turn_results, _ocean_pid, _registered_players, []), do: turn_results
+  defp take_turns(turn_results, ocean_pid, registered_players, [{player, position} | rest_of_turns]) do
+    turn(ocean_pid, player, position)
+    |> take_turn(turn_results, registered_players, player)
+    |> take_turns(ocean_pid, registered_players, rest_of_turns)
+  end
+
+  defp take_turn({_, _, :no_ocean_yet}, turn_results, _registered_players, player) do
+    Logger.info("#{player} is trying to take a turn before there is an ocean")
+    turn_results
+  end
+  defp take_turn(turn, turn_results, registered_players, _player) do
+    turn_results ++ [ notify_players(turn, registered_players) ]
   end
 
   defp turn(ocean_pid, player, position) do
     case Ocean.strike(ocean_pid, position) do
       true  -> {player, position, :hit}
       false -> {player, position, :miss}
+      _     -> {player, position, :no_ocean_yet}
     end
   end
 
