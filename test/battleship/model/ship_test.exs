@@ -91,5 +91,31 @@ defmodule ShipTest do
       refute Ship.at?(ship, Position.new(10, 10))
     end
   end
+
+  describe "floating" do
+    test "new ship" do
+      ship = Ship.new("Anonymous", 1, 1, 1, 2)
+
+      assert Ship.floating(ship)
+    end
+
+    test "half a ship" do
+      ship = 
+        Ship.new("Anonymous", 1, 1, 1, 2)
+        |> Ship.strike(1, 1)
+
+      assert Ship.floating(ship)
+    end
+
+    @tag :skip
+    test "no more ship left" do
+      ship = 
+        Ship.new("Anonymous", 1, 1, 1, 2)
+        |> Ship.strike(1, 1)
+        |> Ship.strike(1, 2)
+
+      refute Ship.floating(ship)
+    end
+  end
 end
 

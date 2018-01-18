@@ -10,7 +10,12 @@ defmodule TakingTurns do
 
     turn_results = take_turns([], ocean_pid, registered_players, turns)
 
-    Map.merge(phase_context, %{turn_count: turn_count + length(turn_results), turn_results: turn_results})
+    phase_context = Map.merge(phase_context, %{turn_count: turn_count + length(turn_results), turn_results: turn_results})
+
+    case found_winner(ocean_pid) do
+      true  -> finish_game(phase_context)
+      false -> phase_context
+    end
   end
 
   def tick(phase_context = %{service: %{players_pid: players_pid}}) do
@@ -20,6 +25,17 @@ defmodule TakingTurns do
       turn_count: 0,
       registered_players: registered_players
     })
+  end
+
+  defp found_winner(ocean_pid) do
+    1 == Ocean.number_active_players(ocean_pid)
+  end
+
+  defp finish_game(phase_context = %{service: %{turns_pid: turns_pid}}) do
+    Phase.change(phase_context, :finish, fn phase_context ->
+      Turns.deactivate(turns_pid)
+      phase_context
+    end)
   end
 
   defp take_turns(turn_results, _ocean_pid, _registered_players, []), do: turn_results

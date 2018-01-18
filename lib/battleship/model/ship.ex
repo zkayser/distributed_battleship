@@ -31,4 +31,8 @@ defmodule Ship do
       true   -> ship
     end
   end
+
+  def floating(ship) do
+    true
+  end
 end

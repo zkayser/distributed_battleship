@@ -53,6 +53,11 @@ defmodule Ocean do
       error         -> error
     end
   end
+
+  def number_active_players(pid) do
+    {:ok, number_active_players} = GenServer.call(pid, {:number_active_players})
+    number_active_players
+  end
 end
 
 #
@@ -71,7 +76,7 @@ defmodule Ocean.Server do
 
   # Do not allow any command except set_size until the ocean is active. 
   # This prevents players from adding ships and taking turns until everyone is ready,
-  def handle_call(command, _from_pid, state = %{active: false}) when elem(command, 0) not in [:set_size, :stop] do
+  def handle_call(command, _from_pid, state = %{active: false}) when elem(command, 0) not in [:set_size, :stop, :number_active_players] do
     {:reply, {:error, "no ocean yet"}, state}
   end
 
@@ -151,6 +156,13 @@ defmodule Ocean.Server do
     end)
 
     {:reply, {:ok, strikes}, state}
+  end
+
+  def handle_call({:number_active_players}, _from_pid, state) do
+    Enum.any?(state.ships, fn ship -> 
+      Ship.floating(ship)
+    end)
+    {:reply, {:ok, 0}, state}
   end
 
   def handle_call({:stop}, _from_pid, state) do

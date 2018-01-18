@@ -161,6 +161,31 @@ defmodule TakingTurnsTest do
     end
   end
 
+  describe "found a winner" do
+    setup :setup_ocean_size
+
+    @tag :skip
+    test "change phase when one player left", context do
+      phase_context = TakingTurns.tick(context.phase_context)
+      refute Map.has_key?(phase_context, :new_phase)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 0})
+      phase_context = TakingTurns.tick(phase_context)
+      assert Turns.is_active(context.turns_pid)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 1})
+      phase_context = TakingTurns.tick(phase_context)
+      assert Turns.is_active(context.turns_pid)
+      
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 0, y: 2})
+      phase_context = TakingTurns.tick(phase_context)
+
+      refute Turns.is_active(context.turns_pid)
+      assert :finish == phase_context.new_phase
+    end
+    
+  end
+
   describe "players that disconnect" do
     setup :setup_ocean_size
 

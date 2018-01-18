@@ -25,7 +25,7 @@ defmodule TurnsTest do
     end
   end
 
-  describe "not active" do
+  describe "activation" do
     test "fail turn if not active", context do
       {:error, "No turns accepted yet"} = Turns.take(context.pid, "Ed", %{x: 5, y: 10})
     end
@@ -44,6 +44,10 @@ defmodule TurnsTest do
       Turns.activate(context.pid)
 
       assert true == Turns.is_active(context.pid)
+
+      Turns.deactivate(context.pid)
+
+      assert false == Turns.is_active(context.pid)
     end
   end
 

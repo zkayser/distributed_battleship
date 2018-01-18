@@ -17,6 +17,10 @@ defmodule Turns do
     GenServer.call(pid, {:activate})
   end
 
+  def deactivate(pid) do
+    GenServer.call(pid, {:deactivate})
+  end
+
   def is_active(pid) do
     {:ok, active} = GenServer.call(pid, {:is_active})
 
@@ -47,6 +51,10 @@ defmodule Turns.Server do
 
   def handle_call({:activate}, _, state) do
     {:reply, {:ok, "Activated"}, Map.merge(state, %{active: true}) }
+  end
+
+  def handle_call({:deactivate}, _, state) do
+    {:reply, {:ok, "Deactivated"}, Map.merge(state, %{active: false}) }
   end
 
   def handle_call({:take, _layer, %{x: x, y: y}}, _rom_pid, state) when not is_number(x) or not is_number(y) do
