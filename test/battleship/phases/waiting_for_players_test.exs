@@ -32,7 +32,7 @@ defmodule WaitingForPlayersTest do
     assert phase_context.player_count == 0
   end
 
-  test "when ticks hits 60s stop waiting for players", context do
+  test "when the phase change trigger is pulled stop waiting for players", context do
     Trigger.pull(context.trigger_pid)
 
     phase_context = 

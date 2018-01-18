@@ -8,12 +8,13 @@ defmodule TurnsTest do
 
     %{pid: pid}
   end
+  
+  def setup_activate(context) do
+    Turns.activate(context.pid)
+    :ok
+  end
 
   describe "control" do
-
-    test "start turns", context do
-      assert context.pid
-    end
 
     test "stop turns", context do
       assert {:ok, "Stopped"} == Turns.stop(context.pid)
@@ -24,7 +25,31 @@ defmodule TurnsTest do
     end
   end
 
+  describe "not active" do
+    test "fail turn if not active", context do
+      {:error, "No turns accepted yet"} = Turns.take(context.pid, "Ed", %{x: 5, y: 10})
+    end
+
+    test "allow turns when activated", context do
+      {:error, "No turns accepted yet"} = Turns.take(context.pid, "Ed", %{x: 5, y: 10})
+
+      Turns.activate(context.pid)
+
+      {:ok} = Turns.take(context.pid, "Ed", %{x: 5, y: 10})
+    end
+
+    test "test is active", context do
+      assert false == Turns.is_active(context.pid)
+
+      Turns.activate(context.pid)
+
+      assert true == Turns.is_active(context.pid)
+    end
+  end
+
   describe "take turn" do
+    setup :setup_activate
+
     test "turn", context do
       assert {:ok} = Turns.take(context.pid, "Ed", %Position{x: 5, y: 10})
     end
@@ -35,6 +60,8 @@ defmodule TurnsTest do
   end
 
   describe "process" do
+    setup :setup_activate
+
     test "get turns", context do
       result= Turns.get(context.pid)
 
@@ -92,6 +119,8 @@ defmodule TurnsTest do
   end
 
   describe "wrong types" do
+    setup :setup_activate
+
     test "string x coord", context do
       result = Turns.take(context.pid, "Ed",   %Position{x: "1", y: 11})
 

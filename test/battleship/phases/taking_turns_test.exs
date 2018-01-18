@@ -11,6 +11,8 @@ defmodule TakingTurnsTest do
     Players.register(players_pid, "Foo")
     Players.register(players_pid, "Bar")
 
+    Turns.activate(turns_pid)
+
     on_exit(fn -> 
       Players.stop()
       Ocean.stop()
