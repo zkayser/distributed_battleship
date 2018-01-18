@@ -2,13 +2,26 @@
 
 ## Slides
 
-### Oeriew
+### Overiew
 
-Networking was the goal state was the poblem
+Networking was the goal, state was the poblem.
+
+### Rule Differences
+
+The rules for normal 2 player battleships work well but some changes are needed to scale to more people.
+
+* When you add ships to a shared ocean, there may already be a ship there. This gives players another way to learn where opponents ships are. Is this fare? Of coarse it is. Track collusions and plan your bombing runs.
+* If you strike an opponents ship who should know about it? You should, of coarse, but if all players also know it then you can organize into attack groups against a single foe, which is better.
+* If you miss should your opponents know? Every guess improves the next players guess, unless there are no turns, just a free flow of bombs launched by your best AI. Then seeing your opponents misses will slow you down, and make the game better.
+
 
 ### OO vs Functional
 
 Were is your state?
+
+### What Ummutability Doesn't Mean.
+
+* Data does not change anywhere.
 
 ### Game Flow and Stateful Phases
 
@@ -44,7 +57,10 @@ State is in known places.
 
 Could have:
 
-* Just one giant state.
+* Players and Ocean could have just been one giant state process?
+
+  - Would have saved on join problems.
+  - Would have avoided data sync between GenServer's.
 
 ### Erlang Networks
 
@@ -54,7 +70,13 @@ Many to many peer network or mesh network.
 
 Performance/scaling.
 
-### 
+## The Game
+
+> README: https://github.com/zkayser/distributed_battleship
+
+
+
+
 
 ## References
 
