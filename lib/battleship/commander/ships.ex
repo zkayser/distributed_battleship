@@ -8,4 +8,10 @@ defmodule Ships do
       acc ++ [Ship.strike(ship, bomb.x, bomb.y)] 
     end)
   end
+
+  def floating(ships) do
+     Enum.filter(ships, fn ship -> 
+      Ship.floating(ship)
+    end)
+  end
 end

@@ -32,5 +32,20 @@ defmodule ShipsTest do
 
     assert Ship.new("ship1", 1, 1, 1, 2, [Position.new(1, 2)]) in ships
   end
+
+  test "floading ships only" do
+    ships = [
+      Ship.new("ship1", 1, 1, 1, 2),
+      Ship.new("ship2", 2, 2, 2, 3)
+    ]
+    |> Ships.strike(Position.new(1, 1))
+    |> Ships.strike(Position.new(1, 2))
+
+    floating_ships = Ships.floating(ships)
+     
+    assert 1 == length(floating_ships)
+    assert "ship2" == List.first(floating_ships).player
+  end
+  
 end
 
