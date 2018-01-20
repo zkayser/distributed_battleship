@@ -191,7 +191,7 @@ defmodule Ocean.Server do
   end
 
   defp valid_ship_long_enough(ship) do
-    case ship_length(ship) >= @min_ship_length do
+    case Ship.length(ship) >= @min_ship_length do
       true  -> {:ok}
       false -> {:error, "ships must be longer then 1 part"}
     end
@@ -199,7 +199,7 @@ defmodule Ocean.Server do
 
   defp valid_number_ship_parts(max_ship_parts, player, ship, ships) do
     current_ship_parts = count_players_ships(ships, player)
-    new_ship_parts     = ship_length(ship)
+    new_ship_parts     = Ship.length(ship)
 
     case current_ship_parts + new_ship_parts <= max_ship_parts do
      true  -> {:ok}
@@ -218,19 +218,10 @@ defmodule Ocean.Server do
   defp count_players_ships(ships, player) do
     Enum.reduce(ships, 0, fn ship, count -> 
       case ship do
-        %Ship{player: ^player} -> count + ship_length(ship)
+        %Ship{player: ^player} -> count + Ship.length(ship)
         _                      -> count
       end
     end)
-  end
-
-  # TODO push ship length into Ship module.
-  defp ship_length(ship) do
-    cond do
-      ship.from.x == ship.to.x -> abs(ship.from.y - ship.to.y) + 1
-      ship.from.y == ship.to.y -> abs(ship.from.x - ship.to.x) + 1
-      true                     -> 99
-    end
   end
 
   defp on_top_of(this_ship, that_ship) do

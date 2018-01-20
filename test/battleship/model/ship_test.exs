@@ -107,7 +107,6 @@ defmodule ShipTest do
       assert Ship.floating(ship)
     end
 
-    @tag :skip
     test "no more ship left" do
       ship = 
         Ship.new("Anonymous", 1, 1, 1, 2)
@@ -115,6 +114,31 @@ defmodule ShipTest do
         |> Ship.strike(1, 2)
 
       refute Ship.floating(ship)
+    end
+  end
+
+  describe "length" do
+    test "horizontal ship" do
+      assert Ship.length(Ship.new("Anonymous", 1, 1, 1, 1)) == 1
+      assert Ship.length(Ship.new("Anonymous", 1, 1, 1, 2)) == 2
+      assert Ship.length(Ship.new("Anonymous", 0, 0, 0, 9)) == 10
+    end
+
+    test "vertical ship" do
+      assert Ship.length(Ship.new("Anonymous", 1, 1, 2, 1)) == 2
+      assert Ship.length(Ship.new("Anonymous", 0, 0, 9, 0)) == 10
+    end
+
+    test "from and to reversed in horizontal ship" do
+      assert Ship.length(Ship.new("Anonymous", 1, 2, 1, 1)) == 2
+    end
+
+    test "from and to reversed in vertical ship" do
+      assert Ship.length(Ship.new("Anonymous", 2, 1, 1, 1)) == 2
+    end
+
+    test "a diagonal ship" do
+      assert Ship.length(Ship.new("Anonymous", 0, 0, 1, 1)) == 0
     end
   end
 end

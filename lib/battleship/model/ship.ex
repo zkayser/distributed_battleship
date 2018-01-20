@@ -32,7 +32,15 @@ defmodule Ship do
     end
   end
 
+  def length(ship) do
+    cond do
+      ship.from.x == ship.to.x -> abs(ship.from.y - ship.to.y) + 1
+      ship.from.y == ship.to.y -> abs(ship.from.x - ship.to.x) + 1
+      true                     -> 0
+    end
+  end
+
   def floating(ship) do
-    true
+    Ship.length(ship) != Kernel.length(ship.strikes)
   end
 end
