@@ -159,10 +159,13 @@ defmodule Ocean.Server do
   end
 
   def handle_call({:number_active_players}, _from_pid, state) do
-    Enum.any?(state.ships, fn ship -> 
+    floating_ships = Enum.filter(state.ships, fn ship -> 
       Ship.floating(ship)
     end)
-    {:reply, {:ok, 0}, state}
+
+    players_with_ships = Enum.dedup_by(floating_ships, fn ship -> ship.player end)
+
+    {:reply, {:ok, length(players_with_ships)}, state}
   end
 
   def handle_call({:stop}, _from_pid, state) do

@@ -324,27 +324,58 @@ defmodule OceanTest do
   end
 
   describe "active players" do
-    test "number when only there are no ships", context do
+    test "when there are no players", context do
+      Ocean.size(context.pid, %{})
+
+      assert 0 == Ocean.number_active_players(context.pid)
+    end
+
+    test "when only there are no ships", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
 
       assert 0 == Ocean.number_active_players(context.pid)
     end
 
-    @tag :skip
-    test "number when only one player has ships", context do
+    test "when only one player has ships", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
       {:ok, "Added"} = Ocean.add_ship(context.pid, "player1", 3, 3, 5, 3)
 
       assert 1 == Ocean.number_active_players(context.pid)
     end
 
-    @tag :skip
-    test "number when both players have ships", context do
+    test "when both players have ships", context do
       Ocean.size(context.pid, %{"player1" => true, "player2" => true})
       {:ok, "Added"} = Ocean.add_ship(context.pid, "player1", 3, 3, 5, 3)
       {:ok, "Added"} = Ocean.add_ship(context.pid, "player2", 3, 4, 5, 4)
 
       assert 2 == Ocean.number_active_players(context.pid)
+    end
+
+    test "when both players have ships but one is blown up", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "player1", 3, 3, 5, 3)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "player2", 3, 4, 5, 4)
+
+      assert true == Ocean.strike(context.pid, %{x: 3, y: 3})
+      assert true == Ocean.strike(context.pid, %{x: 4, y: 3})
+      assert true == Ocean.strike(context.pid, %{x: 5, y: 3})
+
+      assert 1 == Ocean.number_active_players(context.pid)
+    end
+    
+    test "when both players ships are hit but there is on ship part left", context do
+      Ocean.size(context.pid, %{"player1" => true, "player2" => true})
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "player1", 3, 3, 5, 3)
+      {:ok, "Added"} = Ocean.add_ship(context.pid, "player2", 3, 4, 5, 4)
+
+      assert true == Ocean.strike(context.pid, %{x: 3, y: 3})
+      assert true == Ocean.strike(context.pid, %{x: 4, y: 3})
+      assert true == Ocean.strike(context.pid, %{x: 5, y: 3})
+
+      assert true == Ocean.strike(context.pid, %{x: 3, y: 4})
+      assert true == Ocean.strike(context.pid, %{x: 4, y: 4})
+
+      assert 1 == Ocean.number_active_players(context.pid)
     end
   end
 end
