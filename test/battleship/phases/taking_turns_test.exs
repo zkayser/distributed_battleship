@@ -164,7 +164,6 @@ defmodule TakingTurnsTest do
   describe "found a winner" do
     setup :setup_ocean_size
 
-    @tag :skip
     test "change phase when one player left", context do
       phase_context = TakingTurns.tick(context.phase_context)
       refute Map.has_key?(phase_context, :new_phase)
