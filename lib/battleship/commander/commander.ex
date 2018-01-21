@@ -9,7 +9,7 @@ defmodule Commander do
     start_game:          &StartGame.tick/1,
     adding_ships:        &AddingShips.tick/1,
     taking_turns:        &TakingTurns.tick/1,
-    finish:              &Commander.noop/1
+    finish:              &Finish.tick/1
   ]
 
   def noop(phase_context) do

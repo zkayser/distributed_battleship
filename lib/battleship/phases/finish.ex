@@ -1,6 +1,6 @@
 defmodule Finish do
 
-  def tick(phase_context = %{notified: true}) do
+  def tick(%{notified: true}) do
     # Do nothing.
   end
 

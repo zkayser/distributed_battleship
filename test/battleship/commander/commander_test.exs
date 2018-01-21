@@ -21,7 +21,7 @@ defmodule CommanderTest do
     test "trigger an action on a tick" do
       context = Commander.play(:none,
         %{
-            :none => %{ test_phases: [:finish] }
+          :none => %{ test_phases: [:finish] }
         }, [none: &CommanderTest.fake_phase/1])
 
       assert context.tick_count == 1

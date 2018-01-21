@@ -79,18 +79,23 @@ defmodule Buster do
   defp listen_for_turns() do
     IO.puts "Waiting for turns"
 
-    listen_for_turns_loop()
+    listen_for_turns_loop("", playing: true)
   end
 
-  defp listen_for_turns_loop() do
+  defp listen_for_turns_loop(last_message, playing: false), do: last_message
+  defp listen_for_turns_loop(_last_message, playing: true) do
     receive do
+      message = {:game_over, winner: name} ->
+        IO.puts "GAME OVER"
+        IO.puts "Winner: #{name}"
+        listen_for_turns_loop(message, playing: false)
       message -> 
         IO.puts("")
         IO.inspect(message)
+        listen_for_turns_loop(message, playing: true)
     after 
       5000 -> IO.write(".")
+      listen_for_turns_loop("none", playing: true)
     end
-
-    listen_for_turns_loop()
   end
 end
