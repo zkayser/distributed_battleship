@@ -4,7 +4,7 @@ defmodule Buster do
         {:ok, _essage}    <- register(player),
         {:ok, ocean_size} <- wait_for_congratulations(),
         {:ok, _dded}      <- add_ship(player, ocean_size),
-        {:ok, _anything}  <- listen_for_turns()
+        {:ok, _anything}  <- take_turns(player, ocean_size)
     do
       IO.puts(">>>> FINISHED")
     else
@@ -54,18 +54,20 @@ defmodule Buster do
   end
 
   defp add_ship(player, _cean_size) do
-    IO.gets("Add a ship?")
+    positions = IO.gets("Add a ship? from_x from_y to_x to_y: ")
+    positions = String.split(positions)
+    [from_x, from_y, to_x, to_y] = Enum.map(positions, &(String.to_integer(&1)))
 
     ocean_pid = :global.whereis_name(:ocean)
     result = GenServer.call(ocean_pid, {:add_ship, %{
           player: player,
           from: %{
-            from_x: 1,
-            from_y: 2
+            from_x: from_x,
+            from_y: from_y
           },
           to: %{
-            to_x: 3,
-            to_y: 2
+            to_x: to_x,
+            to_y: to_y
           }
         }
       }
@@ -76,26 +78,53 @@ defmodule Buster do
     result
   end
 
-  defp listen_for_turns() do
+  defp take_turns(player, ocean_size) do
     IO.puts "Waiting for turns"
 
-    listen_for_turns_loop("", playing: true)
+    turns_pid = :global.whereis_name(:turns)
+
+    listen_for_turns_loop(turns_pid, player, ocean_size, "", take_a_turn: true, playing: true)
   end
 
-  defp listen_for_turns_loop(last_message, playing: false), do: last_message
-  defp listen_for_turns_loop(_last_message, playing: true) do
+  defp listen_for_turns_loop(_turns_pid, _player, _ocean_size, last_message, take_a_turn: _take_a_turn, playing: false), do: last_message
+  defp listen_for_turns_loop(turns_pid, player, ocean_size, last_message, take_a_turn: true, playing: playing) do
+    turns = IO.gets("Your turn: ocean is #{ocean_size}x#{ocean_size}, or enter to read messages (x y): ")
+    process_turn(turns)
+
+    listen_for_turns_loop(turns_pid, player, ocean_size, last_message, take_a_turn: false, playing: playing)
+  end
+
+  defp listen_for_turns_loop(turns_pid, player, ocean_size, _last_message, take_a_turn: false, playing: true) do
+    {last_message, take_a_turn, playing} = listen_to_other_players_turns()
+
+    listen_for_turns_loop(turns_pid, player, ocean_size, last_message, take_a_turn: take_a_turn, playing: playing)
+  end
+
+  defp process_turn(""), do false
+  defp process_turn("\n"), do false
+  defp process_turn(turns) do
+    turns = String.split(turns)
+    [x, y] = Enum.map(turns, &(String.to_integer(&1)))
+
+    result = GenServer.call(turns_pid, {:take, player, %{x: x, y: y}})
+
+    IO.inspect(result)
+  end
+
+  defp listen_to_other_players_turns() do
     receive do
       message = {:game_over, winner: name} ->
         IO.puts "GAME OVER"
         IO.puts "Winner: #{name}"
-        listen_for_turns_loop(message, playing: false)
+        {message, false, false}
       message -> 
         IO.puts("")
         IO.inspect(message)
-        listen_for_turns_loop(message, playing: true)
+        {message, false, true}
     after 
       5000 -> IO.write(".")
-      listen_for_turns_loop("none", playing: true)
+      {"none", true, true}
     end
   end
 end
+

@@ -84,7 +84,7 @@ Messages that you will send during the span of the game.
   |--------------|-------------------------------------------------------------------------------------------------------------------|
   | Register     | :players | {:register, player_name}                                                                               |
   | Add ships    | :ocean   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
-  | Take a turn  | :turns   | {:take, player_name, position}                                                                         |
+  | Take a turn  | :turns   | {:take, player_name, position = %{x: x, y: y}}                                                                         |
 
 Messages that you will receive during the game.
 
@@ -92,6 +92,7 @@ Messages that you will receive during the game.
   |-------------|--------------------------------------------------------------------|
   | Congrats    | {"congratulations", ocean_size, max_ship_parts}                    |
   | Turn Result | {playe_name, position, :hit/:miss}                                 |
+  | Winner      | {:game_over, [{winner: player_name}]}                              |
 
 ## Game Commander Design
 
