@@ -36,4 +36,8 @@ defmodule Trigger.Server do
   def handle_call({:pull}, _rom_pid, _tate) do
     {:reply, true, true}
   end
+
+  def handle_call({:stop}, _from_pid, state) do
+    {:stop, :normal, {:ok, "Stopped"}, state}
+  end
 end

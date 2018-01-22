@@ -89,7 +89,7 @@ defmodule Buster do
   defp listen_for_turns_loop(_turns_pid, _player, _ocean_size, last_message, take_a_turn: _take_a_turn, playing: false), do: last_message
   defp listen_for_turns_loop(turns_pid, player, ocean_size, last_message, take_a_turn: true, playing: playing) do
     turns = IO.gets("Your turn: ocean is #{ocean_size}x#{ocean_size}, or enter to read messages (x y): ")
-    process_turn(turns)
+    process_turn(turns, player, turns_pid)
 
     listen_for_turns_loop(turns_pid, player, ocean_size, last_message, take_a_turn: false, playing: playing)
   end
@@ -100,9 +100,9 @@ defmodule Buster do
     listen_for_turns_loop(turns_pid, player, ocean_size, last_message, take_a_turn: take_a_turn, playing: playing)
   end
 
-  defp process_turn(""), do false
-  defp process_turn("\n"), do false
-  defp process_turn(turns) do
+  defp process_turn("", _, _), do: false
+  defp process_turn("\n", _, _), do: false
+  defp process_turn(turns, player, turns_pid) do
     turns = String.split(turns)
     [x, y] = Enum.map(turns, &(String.to_integer(&1)))
 

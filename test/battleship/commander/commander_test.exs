@@ -83,10 +83,22 @@ defmodule CommanderTest do
     test "players service is started" do
       context = Commander.initialize()
 
-      assert context.service.players_pid, "didn't generate a players pid"
-      assert context.service.ocean_pid, "didn't generate a ocean pid"
-      assert context.service.trigger_pid, "didn't generate a trigger pid"
-      assert context.service.turns_pid, "didn't generate a turns pid"
+      assert Process.alive?(context.service.players_pid), "didn't generate a players pid"
+      assert Process.alive?(context.service.ocean_pid), "didn't generate a ocean pid"
+      assert Process.alive?(context.service.trigger_pid), "didn't generate a trigger pid"
+      assert Process.alive?(context.service.turns_pid), "didn't generate a turns pid"
+    end
+  end
+
+  describe "deinitialize the services" do
+    test "all servies should be stopped" do
+      context = Commander.initialize()
+      Commander.deinitialize()
+
+      refute Process.alive?(context.service.players_pid), "didn't stop a players service"
+      refute Process.alive?(context.service.ocean_pid), "didn't stop a ocean service"
+      refute Process.alive?(context.service.trigger_pid), "didn't stop a trigger service"
+      refute Process.alive?(context.service.turns_pid), "didn't stop a turns service"
     end
   end
 

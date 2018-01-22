@@ -9,6 +9,17 @@ defmodule TriggerTest do
     [pid: pid]
   end
 
+  describe "control" do
+
+    test "stop turns", context do
+      assert {:ok, "Stopped"} == Trigger.stop(context.pid)
+    end
+
+    test "stop by name" do
+      assert {:ok, "Stopped"} == Trigger.stop()
+    end
+  end
+
   test "initialize", context do
     refute Trigger.pulled?(context.pid), "Shouldn't have pulled trigger yet"
   end

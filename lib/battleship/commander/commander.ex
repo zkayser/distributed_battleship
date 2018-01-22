@@ -12,10 +12,6 @@ defmodule Commander do
     finish:              &Finish.tick/1
   ]
 
-  def noop(phase_context) do
-    phase_context
-  end
-
   def valid_phase?(phase) do
     phase in phase_names()
   end
@@ -50,8 +46,23 @@ defmodule Commander do
     context
   end
 
+  def deinitialize() do
+    Logger.info("Deinitialize")
+    Players.stop()
+    Ocean.stop()
+    Trigger.stop()
+    Turns.stop()
+  end
+
   def play() do
-    play(:none, initialize(), @phases)
+    context = initialize()
+
+    play(:none, context, @phases)
+
+    deinitialize()
+
+    Logger.info("The End")
+    System.stop(0)
   end
 
   def play(phase, context) do
