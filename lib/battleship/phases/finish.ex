@@ -16,10 +16,10 @@ defmodule Finish do
     winning_ship = List.first(winners_ships)
 
     Logger.debug("Final ship state #{inspect ships}")
-    Logger.info("Game over. #{inspect players_pid}. Winner is '#{winning_ship.player}'")
+    Logger.info("Game over. Winner is '#{winning_ship.player}'")
 
     for players_pid <- Map.values(registered_players) do
-      Logger.info("Notifying players. #{inspect players_pid}. Winner is '#{winning_ship.player}'")
+      Logger.info("Notifying players. Winner is '#{winning_ship.player}'")
       send players_pid, {:game_over, winner: winning_ship.player}
     end
 
