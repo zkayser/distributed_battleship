@@ -62,7 +62,6 @@ defmodule Commander do
     deinitialize()
 
     Logger.info("The End")
-    System.stop(0)
   end
 
   def play(phase, context), do: play(phase, context, @phases)

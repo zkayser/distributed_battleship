@@ -7,7 +7,9 @@ defmodule Finish do
 
     Logger.info("GAME OVER.")
 
-    phase_context
+    System.stop(0)
+
+    Map.merge(phase_context, %{game_over: true})
   end
 
   def tick(phase_context = %{service: %{players_pid: players_pid, ocean_pid: ocean_pid}}) do
