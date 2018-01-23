@@ -6,13 +6,12 @@ defmodule Ui do
   @graphic_water     "~"
   @graphic_strike    "X"
 
-  def loop(ocean_pid) do
+  def start(ocean_pid) do
     ocean_size = wait_for_ocean_size(ocean_pid)
-
-    render_ocean(ocean_pid, ocean_size)
+    loop(ocean_pid, ocean_size)
   end
 
-  def render_ocean(ocean_pid, ocean_size) do
+  def loop(ocean_pid, ocean_size) do
     {:ok, ships} = Ocean.ships(ocean_pid)
 
     ocean = Ui.render(:text, ocean_size, %{ships: ships})
@@ -20,7 +19,7 @@ defmodule Ui do
     IO.write(ocean)
 
     :timer.sleep(@frame_pause)
-    render_ocean(ocean_pid, ocean_size)
+    loop(ocean_pid, ocean_size)
   end
 
   defp wait_for_ocean_size(ocean_pid) do

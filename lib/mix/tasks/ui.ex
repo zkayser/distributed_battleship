@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Battleship.Ui do
 
   def run([]) do
     Battleship.Command.command(:ocean, fn pid ->
-      Ui.loop(pid)
+      Ui.start(pid)
 
       {:ok, "UI Finished"}
     end)

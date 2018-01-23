@@ -60,6 +60,11 @@ Then connect up the user interface to see the game progress.
 
 ## Player API
 
+To start your beam you will need to add the erlang networking configutation for this cluster:
+
+  > player_name=rose_petal
+  > iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --sname $player_name -r lib/my_player_code.ex -e "MyPlayer.start('$player_name')"
+
 The following describes how you might interface with the battleships server in order to play the game. Firt the commander will start up and publish the host.
 
   > hostname=w.x.y.z
@@ -67,11 +72,6 @@ The following describes how you might interface with the battleships server in o
 Network connection first, this adds your beam into the same erlang network as the commander.
 
   > Node.connect(:"commander@#{hostname}")
-
-To start your beam you will need to add the erlang networking configutation for this cluster:
-
-  > player_name=rose_petal
-  > iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --sname $player_name -r lib/my_player_codeex -e "MyPlayer.start('$player_name')"
 
 How to send message to the commanders services.
 
