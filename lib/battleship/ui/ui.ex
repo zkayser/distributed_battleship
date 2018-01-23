@@ -1,5 +1,7 @@
 defmodule Ui do
 
+  @frame_pause 1000
+
   @graphic_zero_zero "/"
   @graphic_water     "~"
   @graphic_strike    "X"
@@ -7,33 +9,53 @@ defmodule Ui do
   def loop(ocean_pid) do
     ocean_size = wait_for_ocean_size(ocean_pid)
 
+    render_ocean(ocean_pid, ocean_size)
+  end
+
+  def render_ocean(ocean_pid, ocean_size) do
     {:ok, ships} = Ocean.ships(ocean_pid)
 
     ocean = Ui.render(:text, ocean_size, %{ships: ships})
 
     IO.write(ocean)
 
-    :timer.sleep(5000)
-    loop(ocean_pid)
+    :timer.sleep(@frame_pause)
+    render_ocean(ocean_pid, ocean_size)
   end
 
   defp wait_for_ocean_size(ocean_pid) do
     case Ocean.size(ocean_pid) do
       {:ok, ocean_size, _} -> ocean_size
       _                    ->
+        :timer.sleep(@frame_pause)
         IO.puts("Waiting for players to register")
-        :timer.sleep 5000
         wait_for_ocean_size(ocean_pid)
     end
   end
 
   def render(:text, ocean_size, data) do
+    IO.write([IO.ANSI.home(), IO.ANSI.clear()])
+
+    IO.puts(now_to_string())
+    IO.puts("###################")
+
     players = active_players(data.ships)
 
     ocean = render_each_position(ocean_size, data.ships)
     roster = render_players(players)
 
     Enum.join(ocean ++ roster)
+  end
+
+  defp now_to_string() do
+    {{year, month, day}, {hour, minute, second}} = :calendar.local_time()
+    "#{day}.#{month |> zero_pad}.#{year} #{hour |> zero_pad}:#{minute |> zero_pad}:#{second |> zero_pad}"
+  end
+
+  defp zero_pad(number, amount \\ 2) do
+    number
+    |> Integer.to_string
+    |> String.pad_leading(amount, "0")
   end
 
   defp active_players(ships) do
@@ -60,7 +82,7 @@ defmodule Ui do
   end
 
   defp render_header(ocean_size) do
-    [@graphic_zero_zero, " "] 
+    [@graphic_zero_zero, "  "] 
     ++ for number <- (0..ocean_size-1) do "#{rem(number, 10)}" end 
     ++ ["\n"]
   end
@@ -73,7 +95,7 @@ defmodule Ui do
   end
 
   defp render_position(x, y, _cean_limit, ships) when x == 0 do
-    "#{y} #{choose_graphic(x, y, ships)}"
+    "#{zero_pad(y)} #{choose_graphic(x, y, ships)}"
   end
 
   defp render_position(x, y, ocean_limit, ships) when x == ocean_limit do
