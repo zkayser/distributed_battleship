@@ -2,10 +2,12 @@ defmodule Finish do
 
   require Logger
 
-  def tick(%{notified: true}) do
+  def tick(phase_context = %{notified: true}) do
     # Do nothing.
 
     Logger.info("GAME OVER.")
+
+    phase_context
   end
 
   def tick(phase_context = %{service: %{players_pid: players_pid, ocean_pid: ocean_pid}}) do

@@ -65,13 +65,8 @@ defmodule Commander do
     System.stop(0)
   end
 
-  def play(phase, context) do
-    play(phase, context, @phases)
-  end
+  def play(phase, context), do: play(phase, context, @phases)
 
-  def play(:finish, context, _) do
-    Organize.track_phase(context, :finish)
-  end
   def play(phase, context, phases) do
     context = Organize.play(phase, context, phases)
    
