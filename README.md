@@ -1,6 +1,6 @@
 # Distributed Battleship
 
-   DOESN'T WORK YET
+   KINDA WORKS
 
 ## Summary
 
