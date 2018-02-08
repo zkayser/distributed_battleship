@@ -14,6 +14,18 @@ defmodule Finish do
     {:ok, registered_players} = Players.registered_players(players_pid)
     {:ok, ships} = Ocean.ships(ocean_pid)
 
+    report_stats(registered_players, ships)
+
+    notify_players(phase_context, registered_players, ships)
+  end
+
+  defp report_stats(registered_players, ships) do
+    IO.puts("NEED REPORTS HERE")
+    IO.inspect registered_players
+    IO.inspect ships
+  end
+
+  defp notify_players(phase_context, registered_players, ships) do
     winners_ships = Ships.floating(ships)
     winning_ship = List.first(winners_ships)
 
