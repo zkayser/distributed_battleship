@@ -7,8 +7,6 @@ defmodule Finish do
 
     Logger.info("GAME OVER.")
 
-    System.stop(0)
-
     Map.merge(phase_context, %{game_over: true})
   end
 

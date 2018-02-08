@@ -10,11 +10,15 @@ defmodule CommanderTest do
   end
 
   def fake_phase(phase_context = %{stop_next_call: true}) do
-    Map.merge(Map.delete(phase_context, :stop_next_call), %{new_phase: :finish} )
+    Map.merge(Map.delete(phase_context, :stop_next_call), %{new_phase: :finish})
   end
 
   def fake_phase(phase_context) do
-    Map.merge(phase_context, %{stop_next_call: true} )
+    Map.merge(phase_context, %{stop_next_call: true})
+  end
+
+  def fake_finish(phase_context) do
+    Map.merge(phase_context, %{game_over: true})
   end
 
   describe "tick" do
@@ -22,15 +26,19 @@ defmodule CommanderTest do
       context = Commander.play(:none,
         %{
           :none => %{ test_phases: [:finish] }
-        }, [none: &CommanderTest.fake_phase/1])
+        },
+        [
+          none: &CommanderTest.fake_phase/1,
+          finish: &CommanderTest.fake_finish/1
+        ])
 
-      assert context.tick_count == 1
+      assert context.tick_count == 2
     end
 
     test "run two ticks" do
       phases = [
         none: &CommanderTest.fake_phase/1,
-        finish: &CommanderTest.fake_phase/1
+        finish: &CommanderTest.fake_finish/1
       ]
 
       context = Commander.play(:none, 
@@ -39,14 +47,17 @@ defmodule CommanderTest do
           :finish => %{test_phases: []}
         }, phases)
 
-      assert context.tick_count == 2
+      assert context.tick_count == 3
     end
   end
 
   describe "all the phases" do
     test "change phases" do
       phases = Enum.map(Commander.phases, fn {name, _} ->
-        {name, &CommanderTest.fake_phase/1}
+        case name do
+          :finish -> {name, &CommanderTest.fake_finish/1}
+          _       -> {name, &CommanderTest.fake_phase/1} 
+        end
       end)
 
       context = %{}
@@ -58,11 +69,14 @@ defmodule CommanderTest do
 
       context = Commander.play(:none, context, phases)
 
-      assert context.tick_count == 5
+      assert context.tick_count == 6
     end
 
-    test "dont chnage phase is there is no new_state" do
-      context = Commander.play( :none, %{ :none => %{} }, [none: &CommanderTest.fake_phase/1])
+    test "dont chnage phase if there is no new_state" do
+      context = Commander.play( :none, %{ :none => %{} }, [
+        none: &CommanderTest.fake_phase/1,
+        finish: &CommanderTest.fake_finish/1
+      ])
 
       assert context.track_phase == [:none, :none, :finish]
     end
@@ -117,6 +131,5 @@ defmodule CommanderTest do
       refute Map.has_key?(context.none, :service)
     end
   end
-  
 end
 

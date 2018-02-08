@@ -46,6 +46,7 @@ defmodule Commander do
     context
   end
 
+  # TODO let the supervisors deal with shutdown
   def deinitialize() do
     Logger.info("Deinitialize")
     Players.stop()
@@ -66,6 +67,7 @@ defmodule Commander do
 
   def play(phase, context), do: play(phase, context, @phases)
 
+  def play(_, context = %{finish: %{game_over: true}}, _), do: context
   def play(phase, context, phases) do
     context = Organize.play(phase, context, phases)
    

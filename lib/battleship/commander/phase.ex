@@ -23,6 +23,7 @@ defmodule Phase do
 
   def run_phase_action(phase_context, phase, phases) do
     phase_action = Keyword.get(phases, phase)
+    
     phase_action.(phase_context)
   end
 
