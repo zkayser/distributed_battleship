@@ -67,11 +67,11 @@ To start your beam you will need to add the erlang networking configutation for 
 
 The following describes how you might interface with the battleships server in order to play the game. Firt the commander will start up and publish the host.
 
-  > hostname=w.x.y.z
+    hostname=w.x.y.z
 
 Network connection first, this adds your beam into the same erlang network as the commander.
 
-  > Node.connect(:"commander@#{hostname}")
+    Node.connect(:"commander@#{hostname}")
 
 How to send message to the commanders services.
 
