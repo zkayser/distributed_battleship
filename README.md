@@ -52,7 +52,7 @@ The game scales as more players register. The ratios are:
 
 There are a set of scripts that help the distributed game start. First start the server.
 
-  > bin/start_battleships.sh
+    bin/start_battleships.sh
 
 Then connect up the user interface to see the game progress.
 
@@ -62,8 +62,8 @@ Then connect up the user interface to see the game progress.
 
 To start your beam you will need to add the erlang networking configutation for this cluster:
 
-  > player_name=rose_petal
-  > iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --sname $player_name -r lib/my_player_code.ex -e "MyPlayer.start('$player_name')"
+    player_name=rose_petal
+    iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --sname $player_name -r lib/my_player_code.ex -e "MyPlayer.start('$player_name')"
 
 The following describes how you might interface with the battleships server in order to play the game. Firt the commander will start up and publish the host.
 
@@ -75,24 +75,24 @@ Network connection first, this adds your beam into the same erlang network as th
 
 How to send message to the commanders services.
 
-  > pid = :global.whereis_name(:players)
-  > GenServer.call(pid, {:register, player})
+    pid = :global.whereis_name(:players)
+    GenServer.call(pid, {:register, player})
 
 Messages that you will send during the span of the game.
 
-  | Name         | Registry |  Format                                                                                                |
-  |--------------|-------------------------------------------------------------------------------------------------------------------|
-  | Register     | :players | {:register, player_name}                                                                               |
-  | Add ships    | :ocean   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
-  | Take a turn  | :turns   | {:take, player_name, position = %{x: x, y: y}}                                                                         |
+    | Name         | Registry |  Format                                                                                                |
+    |--------------|-------------------------------------------------------------------------------------------------------------------|
+    | Register     | :players | {:register, player_name}                                                                               |
+    | Add ships    | :ocean   | {:add_ship, %{player: player, from: %{from_x: from_x, from_y: from_y}, to: %{to_x: to_x, to_y: to_y}}} |
+    | Take a turn  | :turns   | {:take, player_name, position = %{x: x, y: y}}                                                                         |
 
 Messages that you will receive during the game.
 
-  | Name        | Format                                                             |
-  |-------------|--------------------------------------------------------------------|
-  | Congrats    | {"congratulations", ocean_size, max_ship_parts}                    |
-  | Turn Result | {playe_name, position, :hit/:miss}                                 |
-  | Winner      | {:game_over, [{winner: player_name}]}                              |
+    | Name        | Format                                                             |
+    |-------------|--------------------------------------------------------------------|
+    | Congrats    | {"congratulations", ocean_size, max_ship_parts}                    |
+    | Turn Result | {playe_name, position, :hit/:miss}                                 |
+    | Winner      | {:game_over, [{winner: player_name}]}                              |
 
 ## Game Commander Design
 
