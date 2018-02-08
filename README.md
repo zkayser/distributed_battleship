@@ -56,7 +56,7 @@ There are a set of scripts that help the distributed game start. First start the
 
 Then connect up the user interface to see the game progress.
 
-  > mix battleship.ui
+    mix battleship.ui
 
 ## Player API
 
