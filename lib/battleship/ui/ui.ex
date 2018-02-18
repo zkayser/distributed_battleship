@@ -27,7 +27,7 @@ defmodule Ui do
       {:ok, ocean_size, _} -> ocean_size
       _                    ->
         :timer.sleep(@frame_pause)
-        IO.puts("Waiting for players to register")
+        IO.puts("Waiting for players to finish joining")
         wait_for_ocean_size(ocean_pid)
     end
   end
