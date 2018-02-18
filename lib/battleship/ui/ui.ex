@@ -6,20 +6,20 @@ defmodule Ui do
   @graphic_water     "~"
   @graphic_strike    "X"
 
-  def start(ocean_pid) do
+  def start(ocean_pid, visibility) do
     ocean_size = wait_for_ocean_size(ocean_pid)
-    loop(ocean_pid, ocean_size)
+    loop(ocean_pid, ocean_size, visibility)
   end
 
-  def loop(ocean_pid, ocean_size) do
+  def loop(ocean_pid, ocean_size, visibility) do
     {:ok, ships} = Ocean.ships(ocean_pid)
 
-    ocean = Ui.render(:text, ocean_size, %{ships: ships})
+    ocean = Ui.render(:text, ocean_size, %{ships: ships}, visibility)
 
     IO.write(ocean)
 
     :timer.sleep(@frame_pause)
-    loop(ocean_pid, ocean_size)
+    loop(ocean_pid, ocean_size, visibility)
   end
 
   defp wait_for_ocean_size(ocean_pid) do
@@ -32,15 +32,15 @@ defmodule Ui do
     end
   end
 
-  def render(:text, ocean_size, data) do
+  def render(:text, ocean_size, data, visibility \\ :private) do
     IO.write([IO.ANSI.home(), IO.ANSI.clear()])
 
     IO.puts(now_to_string())
-    IO.puts("###################")
+    IO.puts("######## #{visibility} ###########")
 
     players = active_players(data.ships)
 
-    ocean = render_each_position(ocean_size, data.ships)
+    ocean = render_each_position(ocean_size, data.ships, visibility)
     roster = render_players(players)
 
     Enum.join(ocean ++ roster)
@@ -76,8 +76,8 @@ defmodule Ui do
     end)
   end
 
-  defp render_each_position(ocean_size, ships) do
-    render_header(ocean_size) ++ render_row(ocean_size, ships)
+  defp render_each_position(ocean_size, ships, visibility) do
+    render_header(ocean_size) ++ render_row(ocean_size, ships, visibility)
   end
 
   defp render_header(ocean_size) do
@@ -86,25 +86,25 @@ defmodule Ui do
     ++ ["\n"]
   end
 
-  defp render_row(ocean_size, ships) do
+  defp render_row(ocean_size, ships, visibility) do
     range = 0..ocean_size-1
     for y <- range, x <- range do
-      render_position(x, y, ocean_size - 1, ships)
+      render_position(x, y, ocean_size - 1, ships, visibility)
     end
   end
 
-  defp render_position(x, y, _cean_limit, ships) when x == 0 do
-    "#{zero_pad(y)} #{choose_graphic(x, y, ships)}"
+  defp render_position(x, y, _cean_limit, ships, visibility) when x == 0 do
+    "#{zero_pad(y)} #{choose_graphic(x, y, ships, visibility)}"
   end
 
-  defp render_position(x, y, ocean_limit, ships) when x == ocean_limit do
-    choose_graphic(x, y, ships) <> "\n"
+  defp render_position(x, y, ocean_limit, ships, visibility) when x == ocean_limit do
+    choose_graphic(x, y, ships, visibility) <> "\n"
   end
-  defp render_position(x, y, _cean_limit, ships) do
-    choose_graphic(x, y, ships)
+  defp render_position(x, y, _cean_limit, ships, visibility) do
+    choose_graphic(x, y, ships, visibility)
   end
 
-  defp choose_graphic(x, y, ships) do
+  defp choose_graphic(x, y, ships, visibility) do
     ocean_position = Position.new(x, y)
 
     ship = Enum.find(ships, false, fn ship -> Ship.at?(ship, ocean_position) end)
@@ -113,11 +113,12 @@ defmodule Ui do
       _     -> Ship.struck?(ship, ocean_position)
     end
 
-    graphic(ship, was_struck)
+    graphic(ship, was_struck, visibility)
   end
 
-  defp graphic(_ship = false, _was_struck = false), do: @graphic_water
-  defp graphic(ship, _was_struck = false), do: player_code(ship.player)
-  defp graphic(_ship, _was_struck = true ), do: @graphic_strike
+  defp graphic(_ship = false, _was_struck = false, _visibility), do: @graphic_water
+  defp graphic(ship, _was_struck = false, :private),             do: player_code(ship.player)
+  defp graphic(_ship, _was_struck = false, :public),             do: @graphic_water
+  defp graphic(_ship, _was_struck = true, _visibility),          do: @graphic_strike
 end
 

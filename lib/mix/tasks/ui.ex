@@ -3,9 +3,11 @@ defmodule Mix.Tasks.Battleship.Ui do
 
   @shortdoc "UI showing the battleship game"
 
-  def run([]) do
+  def run(visibility) do
+    visibility = visibility |> to_string |> String.to_atom
+
     Battleship.Command.command(:ocean, fn pid ->
-      Ui.start(pid)
+      Ui.start(pid, visibility)
 
       {:ok, "UI Finished"}
     end)
