@@ -1,6 +1,7 @@
 defmodule Turns do
+ 
   def start() do
-    {:ok, pid} = GenServer.start_link(Turns.Server, %{active: false, turns: []}, name: {:global, :turns})
+    {:ok, pid} = GenServer.start_link(Turns.Server, %{active: false, registered_players: %{}, turns: []}, name: {:global, :turns})
     pid
   end
 
@@ -19,6 +20,10 @@ defmodule Turns do
 
   def deactivate(pid) do
     GenServer.call(pid, {:deactivate})
+  end
+
+  def registered_players(pid, registered_players) do
+    GenServer.call(pid, {:registered_players, registered_players})
   end
 
   def is_active(pid) do
@@ -41,12 +46,20 @@ end
 defmodule Turns.Server do
   use GenServer
 
-  def handle_call(command, _from_pid, state = %{active: false}) when elem(command, 0) not in [:activate, :is_active, :stop] do
+  def init(args) do
+    {:ok, args}
+  end
+ 
+  def handle_call(command, _from_pid, state = %{active: false}) when elem(command, 0) not in [:registered_players, :activate, :is_active, :stop] do
     {:reply, {:error, "No turns accepted yet"}, state}
   end
 
   def handle_call({:is_active}, _from_pid, state) do
     {:reply, {:ok, state.active}, state}
+  end
+
+  def handle_call({:registered_players, registered_players}, _, state) do
+    {:reply, {:ok, "Thanks"}, Map.merge(state, %{registered_players: registered_players}) }
   end
 
   def handle_call({:activate}, _, state) do
@@ -61,7 +74,10 @@ defmodule Turns.Server do
     {:reply, {:error, "position must be numeric"}, state}
   end
   def handle_call({:take, player, position}, _rom_pid, state) do
-    {:reply, {:ok}, Map.merge(state, %{turns: state.turns ++ [{player, position}] }) }
+    case is_registered(state.registered_players, player) do
+      true  -> {:reply, {:ok}, Map.merge(state, %{turns: state.turns ++ [{player, position}]}) }
+      false -> {:reply, {:error, "You are not registered #{player}"}, state}
+    end
   end
 
   def handle_call({:get}, _rom_pid, state) do
@@ -70,6 +86,10 @@ defmodule Turns.Server do
 
   def handle_call({:stop}, _from_pid, state) do
     {:stop, :normal, {:ok, "Stopped"}, state}
+  end
+
+  defp is_registered(registered_players, player) do
+    Map.has_key?(registered_players, player)
   end
 end
 

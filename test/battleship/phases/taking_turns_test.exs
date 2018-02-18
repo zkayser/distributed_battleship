@@ -11,6 +11,9 @@ defmodule TakingTurnsTest do
     Players.register(players_pid, "Foo")
     Players.register(players_pid, "Bar")
 
+    {:ok, registered_players} = Players.registered_players(players_pid)
+    Turns.registered_players(turns_pid, registered_players)
+
     Turns.activate(turns_pid)
 
     on_exit(fn -> 
