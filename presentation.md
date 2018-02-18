@@ -1,5 +1,7 @@
 # Distributed Battleships Design
 
+    https://docs.google.com/presentation/d/1o-rUYDxGzlgnzSBQ-7IiHD1bvtMQ5cSv9gx8qhdbMBQ/edit?usp=sharing
+
 ## Slides
 
 ### Overiew
