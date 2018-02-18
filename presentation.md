@@ -19,9 +19,9 @@ The rules for normal 2 player battleships work well but some changes are needed 
 
 Were is your state?
 
-### What Ummutability Doesn't Mean.
+### What Immutability Doesn't Mean.
 
-* Data does not change anywhere.
+* Data does not change.
 
 ### Game Flow and Stateful Phases
 
@@ -72,7 +72,7 @@ Performance/scaling.
 
 ## The Game
 
-> README: https://github.com/zkayser/distributed_battleship
+    README: https://github.com/zkayser/distributed_battleship
 
 
 

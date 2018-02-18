@@ -37,6 +37,10 @@ defmodule Players.Server do
   use GenServer
   require Logger
 
+  def init(args) do
+    {:ok, args}
+  end
+
   def handle_call({:stop}, _from_pid, state) do
     {:stop, :normal, {:ok, "Stopped"}, state}
   end
@@ -50,10 +54,9 @@ defmodule Players.Server do
     {:reply, {:error, "can not register anymore"}, state}
   end
   def handle_call({:register, player_name}, {from_pid, _ }, state) do
-    Logger.info("Registered #{inspect from_pid}: #{player_name}")
-    players = Map.merge(state.players, %{player_name => from_pid})
-    state = Map.merge(state, %{players: players})
-    {:reply, {:ok, "Now there are #{players |> Map.keys |> length} players"}, state}
+    player_name = normalize(player_name) 
+
+    register(player_name, from_pid, state)
   end
 
   def handle_call({:registered_players}, _from_pid, state) do
@@ -69,5 +72,20 @@ defmodule Players.Server do
     {:noreply, state}
   end
 
+  defp register({:ok, player_name}, from_pid, state) do
+    Logger.info("Registered #{inspect from_pid}: #{inspect player_name}")
+
+    players = Map.merge(state.players, %{player_name => from_pid})
+    state = Map.merge(state, %{players: players})
+    {:reply, {:ok, "Now there are #{players |> Map.keys |> length} players"}, state}
+  end
+  defp register({:error, _message}, _from_pid, state) do
+    {:reply, {:error, "Player name must be a string"}, state}
+  end
+
+  defp normalize(player_name) when is_list(player_name),   do: {:ok, to_string(player_name)}
+  defp normalize(player_name) when is_atom(player_name),   do: {:ok, Atom.to_string(player_name)}
+  defp normalize(player_name) when is_binary(player_name), do: {:ok, player_name}
+  defp normalize(_player_name), do: {:error, "not this"}
 end
 
