@@ -11,9 +11,6 @@ defmodule TakingTurnsTest do
     Players.register(players_pid, "Foo")
     Players.register(players_pid, "Bar")
 
-    {:ok, registered_players} = Players.registered_players(players_pid)
-    Turns.registered_players(turns_pid, registered_players)
-
     Turns.activate(turns_pid)
 
     on_exit(fn -> 
@@ -44,6 +41,13 @@ defmodule TakingTurnsTest do
 
       assert phase_context.turn_count == 0
       assert Map.size(phase_context.registered_players) > 0
+    end
+
+    test "Initialize the turns state with the registered players", context do
+      TakingTurns.tick(context.phase_context)
+
+      {:ok} = Turns.take(context.turns_pid, "Foo", %{x: 5, y: 10})
+      {:error, "You are not registered Unregistered"} = Turns.take(context.turns_pid, "Unregistered", %{x: 5, y: 10})
     end
   end
 

@@ -154,7 +154,7 @@ defmodule TurnsTest do
     end
   end
 
-  describe "wrong types" do
+  describe "wrong types of coordinate" do
     setup :setup_activate
 
     test "string x coord", context do
@@ -166,6 +166,15 @@ defmodule TurnsTest do
       result = Turns.take(context.turns_pid, "Ed",   %Position{x: 1, y: "11"})
 
       assert result == {:error, "position must be numeric"}
+    end
+  end
+
+  describe "wrong types of player name" do
+    setup :setup_activate
+    setup :setup_registered_player
+
+    test "should be string", context do
+      {:error, "Player name must be a string"} = Turns.take(context.turns_pid, %{not: "a string"}, %Position{x: 1, y: 1})
     end
   end
 end

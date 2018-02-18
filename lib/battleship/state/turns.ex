@@ -73,11 +73,9 @@ defmodule Turns.Server do
   def handle_call({:take, _layer, %{x: x, y: y}}, _rom_pid, state) when not is_number(x) or not is_number(y) do
     {:reply, {:error, "position must be numeric"}, state}
   end
-  def handle_call({:take, player, position}, _rom_pid, state) do
-    case is_registered(state.registered_players, player) do
-      true  -> {:reply, {:ok}, Map.merge(state, %{turns: state.turns ++ [{player, position}]}) }
-      false -> {:reply, {:error, "You are not registered #{player}"}, state}
-    end
+  def handle_call({:take, player_name, position}, _rom_pid, state) do
+    normalize(player_name)
+    |> take_turn(position, state)
   end
 
   def handle_call({:get}, _rom_pid, state) do
@@ -91,5 +89,20 @@ defmodule Turns.Server do
   defp is_registered(registered_players, player) do
     Map.has_key?(registered_players, player)
   end
+
+  defp take_turn({:ok, player_name}, position, state) do
+    case is_registered(state.registered_players, player_name) do
+      true  -> {:reply, {:ok}, Map.merge(state, %{turns: state.turns ++ [{player_name, position}]}) }
+      false -> {:reply, {:error, "You are not registered #{player_name}"}, state}
+    end
+  end
+  defp take_turn({:error, _}, _position, state) do
+    {:reply, {:error, "Player name must be a string"}, state}
+  end
+
+  defp normalize(player_name) when is_list(player_name),   do: {:ok, to_string(player_name)}
+  defp normalize(player_name) when is_atom(player_name),   do: {:ok, Atom.to_string(player_name)}
+  defp normalize(player_name) when is_binary(player_name), do: {:ok, player_name}
+  defp normalize(_player_name), do: {:error, "not this"}
 end
 

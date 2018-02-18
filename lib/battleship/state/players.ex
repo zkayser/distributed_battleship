@@ -54,9 +54,8 @@ defmodule Players.Server do
     {:reply, {:error, "can not register anymore"}, state}
   end
   def handle_call({:register, player_name}, {from_pid, _ }, state) do
-    player_name = normalize(player_name) 
-
-    register(player_name, from_pid, state)
+    normalize(player_name) 
+    |> register(from_pid, state)
   end
 
   def handle_call({:registered_players}, _from_pid, state) do
