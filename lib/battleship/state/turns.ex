@@ -74,7 +74,7 @@ defmodule Turns.Server do
     {:reply, {:error, "position must be numeric"}, state}
   end
   def handle_call({:take, player_name, position}, _rom_pid, state) do
-    normalize(player_name)
+    Coerce.string(player_name)
     |> take_turn(position, state)
   end
 
@@ -100,9 +100,5 @@ defmodule Turns.Server do
     {:reply, {:error, "Player name must be a string"}, state}
   end
 
-  defp normalize(player_name) when is_list(player_name),   do: {:ok, to_string(player_name)}
-  defp normalize(player_name) when is_atom(player_name),   do: {:ok, Atom.to_string(player_name)}
-  defp normalize(player_name) when is_binary(player_name), do: {:ok, player_name}
-  defp normalize(_player_name), do: {:error, "not this"}
 end
 

@@ -54,7 +54,7 @@ defmodule Players.Server do
     {:reply, {:error, "can not register anymore"}, state}
   end
   def handle_call({:register, player_name}, {from_pid, _ }, state) do
-    normalize(player_name) 
+    Coerce.string(player_name)
     |> register(from_pid, state)
   end
 
@@ -81,10 +81,5 @@ defmodule Players.Server do
   defp register({:error, _message}, _from_pid, state) do
     {:reply, {:error, "Player name must be a string"}, state}
   end
-
-  defp normalize(player_name) when is_list(player_name),   do: {:ok, to_string(player_name)}
-  defp normalize(player_name) when is_atom(player_name),   do: {:ok, Atom.to_string(player_name)}
-  defp normalize(player_name) when is_binary(player_name), do: {:ok, player_name}
-  defp normalize(_player_name), do: {:error, "not this"}
 end
 
