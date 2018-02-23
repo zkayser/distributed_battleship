@@ -3,8 +3,8 @@ defmodule Mix.Tasks.Battleship.NextPhase do
 
   @shortdoc "Trigger a phase change"
 
-  def run(_) do
-    Battleship.Command.puts(:trigger, fn trigger_pid ->
+  def run(commander_ip) do
+    Battleship.Command.puts(commander_ip, :trigger, fn trigger_pid ->
       Trigger.pull(trigger_pid)
       {:ok, "Changing phase"}
     end)

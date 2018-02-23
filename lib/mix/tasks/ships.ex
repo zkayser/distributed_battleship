@@ -3,8 +3,8 @@ defmodule Mix.Tasks.Battleship.Ships do
 
   @shortdoc "List all registered ships"
 
-  def run(_) do
-    Battleship.Command.puts(:ocean, fn pid ->
+  def run(commander_ip) do
+    Battleship.Command.puts(commander_ip, :ocean, fn pid ->
       {:ok, Ocean.ships(pid) }
     end)
   end

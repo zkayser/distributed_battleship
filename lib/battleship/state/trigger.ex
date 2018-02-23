@@ -29,6 +29,10 @@ end
 defmodule Trigger.Server do
   use GenServer
 
+  def init(args) do
+    {:ok, args}
+  end
+
   def handle_call({:pulled}, _rom_pid, state) do
     {:reply, state, false}
   end

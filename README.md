@@ -1,7 +1,5 @@
 # Distributed Battleship
 
-   KINDA WORKS
-
 ## Summary
 
 A battleship game orchestrates many players. Each player is a node on the erlang network
@@ -19,7 +17,7 @@ Imaging a room full of eager Elixir programmers wanting to pit their battleships
 
 ### Introduction
 
-First get over all the firewall issues with are bound to hurt. The game uses erlang clustering which uses the following ports.
+First get over all the firewall issues which are bound to hurt. The game uses erlang clustering which uses the following ports.
 
 * 4369 for primary connections.
 * 9000 - 9100 for allocation to each player.

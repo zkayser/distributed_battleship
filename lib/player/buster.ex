@@ -1,6 +1,6 @@
 defmodule Buster do
-  def start(player_name) do
-    with true             <- connect(),
+  def start(commmander_ip, player_name) do
+    with true             <- connect(commmander_ip),
         {:ok, _essage}    <- register(player_name),
         {:ok, ocean_size} <- wait_for_congratulations(),
         {:ok, _dded}      <- add_ship(player_name, ocean_size),
@@ -13,11 +13,10 @@ defmodule Buster do
     end
   end
 
-  defp connect() do
+  defp connect(commmander_ip) do
     IO.gets("Ready to connect?")
 
-    {:ok, hostname} = :inet.gethostname
-    Node.connect(:"commander@#{hostname}")
+    Node.connect(:"commander@#{commmander_ip}")
   end
 
   defp register(player_name) do

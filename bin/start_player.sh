@@ -2,12 +2,13 @@
 # Player
 # ###############################################
 
-if [[ $# -gt 0 ]]; then
-  player=$1
-else
-  echo -n "Enter player name: "
-  read player
+if [[ $# -ne 2 ]]; then
+  echo "usage: `basename $0` commander_ip playername"
+  exit 2
 fi
 
-iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --sname $player -r lib/player/buster.ex -e "Buster.start('$player')"
+commander_ip=$1
+player=$2
+
+iex --erl '-kernel inet_dist_listen_min 9000' --erl '-kernel inet_dist_listen_max 9100' --name $player@$commander_ip -r lib/player/buster.ex -e "Buster.start('$commander_ip', '$player')"
 

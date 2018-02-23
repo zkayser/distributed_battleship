@@ -1,11 +1,11 @@
 defmodule Battleship.Command do
 
-  def puts(service, command_function) do
-    IO.inspect command(service, command_function)
+  def puts(commander_ip, service, command_function) do
+    IO.inspect command(commander_ip, service, command_function)
   end
 
-  def command(service, command_function) do
-    with connected      <- connect(),
+  def command(commander_ip, service, command_function) do
+    with connected      <- connect(commander_ip),
          {:ok, pid}     <- lookup_service(service, connected)
     do
       {:ok, message} = command_function.(pid)
@@ -16,9 +16,8 @@ defmodule Battleship.Command do
     end
   end
 
-  defp connect() do
-    {:ok, hostname} = :inet.gethostname
-    Node.connect(:"commander@#{hostname}")
+  defp connect(commander_ip) do
+    Node.connect(:"commander@#{commander_ip}")
   end
 
   defp lookup_service(_, :ignored) do

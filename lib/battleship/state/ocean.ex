@@ -74,6 +74,10 @@ defmodule Ocean.Server do
   # All ships must be at least 2 parts long.
   @min_ship_length         2
 
+  def init(args) do
+    {:ok, args}
+  end
+
   # Do not allow any command except set_size until the ocean is active. 
   # This prevents players from adding ships and taking turns until everyone is ready,
   def handle_call(command, _from_pid, state = %{active: false}) when elem(command, 0) not in [:set_size, :stop, :number_active_players] do
