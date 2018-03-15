@@ -1,6 +1,4 @@
 defmodule Commander do
-  alias Commander
-
   require Logger
 
   @phases [
